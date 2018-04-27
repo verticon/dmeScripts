@@ -1,0 +1,6 @@
+# OS X Finder
+.DS_Store
+
+# Build generated
+target/
+

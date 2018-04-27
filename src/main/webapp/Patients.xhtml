@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+    	<h:outputStylesheet library="default" name="css/style.css"  />
+        <title>DME Scripts Demo</title>
+    </h:head>
+
+    <h:body>
+		<h3 class="title">DME Scripts Demo</h3>
+		<h:outputText value="&#160;" />
+
+		<table align="center" width="600">
+			<tr><td><h:form rendered="#{!patientController.addingNew}"  class="buttons">
+	 			<h:outputText value="Patients:  " styleClass="tableName"/>
+	    	    <h:commandButton accesskey="n" action="#{patientController.addNew}" value="Add"  styleClass="demo"/>
+		    </h:form></td></tr>
+	
+	    	<tr><td><h:form rendered="#{patientController.addingNew}" styleClass="demo">
+				<fieldset>
+					<legend>New Patient</legend>
+
+		        	<h:panelGrid columns="3">
+		            	<h:outputText value="First Name"/>
+			            <h:inputText value="#{patientController.newPatient.firstName}" id="firstName" required="true" requiredMessage="First name is required"/>
+		  				<h:message for="firstName" errorClass="error"/>
+
+		    	        <h:outputText value="Last Name"/>
+		        	    <h:inputText value="#{patientController.newPatient.lastName}" id="lastName" required="true" requiredMessage="Last name is required"/>
+		  				<h:message for="lastName" errorClass="error"/>
+
+		    	        <h:outputText value="Gender"/>
+						<h:selectOneRadio value="#{patientController.newPatient.gender}" id="gender" required="true">
+    						<f:selectItems value="#{patientController.genders}" />
+						</h:selectOneRadio>
+		  				<h:message for="gender" errorClass="error"/>
+ 
+		    	        <h:outputText value="Birth Date"/>
+						<h:inputText value="#{patientController.newPatient.birthDate}" id="birthDate" required="true" requiredMessage="Birth date is required">
+							<f:convertDateTime pattern="MM/dd/yyyy" />
+						</h:inputText>
+		  				<h:message for="birthDate" errorClass="error"/>
+		
+			            <h:outputText value="Insurance"/>
+		    	        <h:selectOneMenu validatorMessage="required" value="#{patientController.newPatient.insurance}">
+		        	        <f:selectItems value="#{patientController.insuranceCompanies}" />
+		            	</h:selectOneMenu>
+			        </h:panelGrid>
+		
+		    	    <h:panelGroup>
+		        	    <h:commandButton action="#{patientController.save}" value="Save" accesskey="s"/>
+		            	<h:commandButton action="#{patientController.cancel}" value="Cancel" accesskey="c" immediate="true"/>
+			        </h:panelGroup>
+				</fieldset>
+	
+				<h:outputText value="&#160;" />
+	    	</h:form></td></tr>
+		
+	    	<tr><td><h:form>
+	        	<h:dataTable value="#{patientController.table}" var="patient" styleClass="demo">
+		            <h:column>
+	    	            <f:facet name="header">
+	        	            <h:column>
+	            	            <h:outputText value="Name"/>
+	                	    </h:column>
+		                </f:facet>
+	    	            <h:outputText value="#{patient.fullName}"/>
+	        	    </h:column>
+
+		            <h:column>
+	    	            <f:facet name="header">
+	        	            <h:column>
+	            	            <h:outputText value="Birthday"/>
+	                	    </h:column>
+		                </f:facet>
+	    	            <h:outputText value="#{patient.birthDate}">
+							<f:convertDateTime pattern="MMM dd, yyyy" />
+	    	            </h:outputText>
+	        	    </h:column>
+
+		            <h:column>
+	    	            <f:facet name="header">
+	        	            <h:column>
+	            	            <h:outputText value="Gender"/>
+	                	    </h:column>
+		                </f:facet>
+	    	            <h:outputText value="#{patient.gender.toString()}"/>
+	        	    </h:column>
+		
+		            <h:column>
+	    	            <f:facet name="header">
+	        	            <h:column>
+	            	            <h:outputText value="Insurance"/>
+	                	    </h:column>
+		                </f:facet>
+	    	            <h:outputText value="#{patient.insurance}"/>
+	        	    </h:column>
+	
+		            <h:column>
+	    	            <f:facet name="header">
+	        	            <h:column>
+	            	            <h:outputText value="Actions"/>
+	                	    </h:column>
+		                </f:facet>
+	    	            <h:panelGrid columns="1">
+	        	            <h:commandLink value="delete" action="#{patientController.delete}">
+	            	            <f:setPropertyActionListener target="#{patientController.target}" value="#{patient}" />
+	                	    </h:commandLink>
+		                </h:panelGrid>
+	    	        </h:column>
+	        	</h:dataTable>
+
+				<h:outputText value="&#160;" />
+	    	</h:form></td></tr>
+
+	 		<tr><td><h:form class="buttons">
+				<h:commandButton value="Orders" action="index" styleClass="demo"/>
+				<h:commandButton value="Products" action="Products" styleClass="demo"/>
+		    </h:form></td></tr>
+   	   </table>
+    </h:body>
+
+</html>
