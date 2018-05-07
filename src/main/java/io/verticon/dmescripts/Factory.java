@@ -3,7 +3,7 @@ package io.verticon.dmescripts;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.Random;
 import java.util.Hashtable;
 
 import javax.persistence.EntityManagerFactory;
@@ -22,6 +22,10 @@ public class Factory implements ServletContextListener {
 	public static final EntityManagerFactory emf = getFactory();
 
 	private static EntityManagerFactory getFactory() {
+		
+		// If the connection information has been provided via system properties
+		// then use those values to override the values provided by persistence.xml
+
 		Map<String, String> overrides = new Hashtable<String,String>();
 
 		String dbName = System.getProperty("RDS_DB_NAME");
@@ -40,6 +44,7 @@ public class Factory implements ServletContextListener {
 		return Persistence.createEntityManagerFactory(persistanceUnit, overrides);
 	}
 
+    //***************************************************************************************
 
 	public static final List<String> insuranceCompanies = new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
@@ -51,6 +56,11 @@ public class Factory implements ServletContextListener {
 		}
 	};
 
+	private static Random random = new Random();
+	public static String getRandomInsurance() {
+		return Factory.insuranceCompanies.get(random.nextInt(insuranceCompanies.size()));
+	}
+
 	// Careful, the DataAccessService implementations depend upon the insurance
 	// companies and the EMF; so initialize the data service last. KLUDGY! Must fix.
 	public static final DataAccessService sDataService = new DefaultDataAccessService();
@@ -58,7 +68,7 @@ public class Factory implements ServletContextListener {
 	
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        CompletableFuture.supplyAsync(this::loadProductData).thenApply(this::productDataLoadCompleted);  
+        System.out.println("Servlet has been started.");
     }
 
     @Override
@@ -66,13 +76,4 @@ public class Factory implements ServletContextListener {
         System.out.println("Servlet has been stopped.");
     }
 
-    private boolean loadProductData() {
-        System.out.println("Loading product data.");
-    	return true;
-    }
-
-    private boolean productDataLoadCompleted(boolean status) {
-        System.out.printf("Product data loading %s.\n", status ? "succeeded" : "failed");
-        return status;
-    }
 }

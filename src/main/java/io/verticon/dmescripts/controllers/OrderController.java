@@ -102,6 +102,9 @@ public class OrderController implements Serializable {
     	return patient == null ? 0 : patient.getId();
     }
 
+    // Note: When the patient is changed, the list of candidate products is also potentially changed based on the insurance.
+    // Thus the currently selected product might no longer be valid; this is not being handled at the moment. However, it
+    // seems that the whole insurance thing is going to be eliminated.
     public void setPatientId(Long id) {
     	patients.forEach(patient -> {
     		if (patient.getId() == id) {
@@ -118,6 +121,7 @@ public class OrderController implements Serializable {
     private void initProducts() {
     	products = dataService.getProducts();
         if (products.size() > 0) product = products.get(0);
+        //System.out.printf("Init products; count = %d\n", products.size());
     }
 
     public List<SelectItem> getProducts() {
@@ -129,17 +133,25 @@ public class OrderController implements Serializable {
             	}
             });
         }
+        //System.out.printf("Get products; count = %d\n", list.size());
         return list;
     }
 
+    public String getProductImageUrl() {
+    	return product == null ? null : product.getImageUrl();
+    }
+
     public Long getProductId() {
+        //System.out.printf("Getting current product id: %d\n", product == null ? -1 : product.getId());
     	return product == null ? 0 : product.getId();
     }
 
     public void setProductId(Long id) {
+        //System.out.printf("Setting current product, id = %d\n", id);
     	products.forEach(product -> {
-    		if (product.getId() == id) {
+    		if (product.getId().longValue() == id.longValue()) {
     			this.product = product;
+    	        //System.out.printf("Current product set to %s\n", product.getName());
     		}
     	});
     }

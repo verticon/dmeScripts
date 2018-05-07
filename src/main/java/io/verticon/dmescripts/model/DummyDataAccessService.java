@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import io.verticon.dmescripts.Factory;
 
@@ -15,24 +14,23 @@ public class DummyDataAccessService implements DataAccessService {
 	private List<Order> orders = new ArrayList<Order>();
 	
 	public DummyDataAccessService() {
-		Random random = new Random();
 
-		makeEntries("Robert", "Vaessen", "30/01/1954", Patient.Gender.MALE, "Bandage", random);
-		makeEntries("Ravi", "Thakkar", "23/12/1971", Patient.Gender.MALE, "Catheter", random);
+		makeEntries("Robert", "Vaessen", "30/01/1954", Patient.Gender.MALE, "Incontinence", "Disposable Briefs", "Prevail Bariatric Brief");
+		makeEntries("Ravi", "Thakkar", "23/12/1971", Patient.Gender.MALE, "Catheter", "Indwelling Foley Catheters", "Medline Two Way Foley Catheter 16FR, 5CC");
 	}
 	
-	private void makeEntries(String firstName, String lastName, String birthDay, Patient.Gender gender, String productName, Random random) {
-		List<String> insuranceCompanies = Factory.insuranceCompanies;
-		String company = insuranceCompanies.get(random.nextInt(insuranceCompanies.size()));
+	private void makeEntries(String firstName, String lastName, String birthDay, Patient.Gender gender, String productName, String productType, String productCategory) {
 
         Date birthDate;
         try { birthDate = new SimpleDateFormat("dd/MM/yyyy").parse(birthDay); }
         catch (Exception e) { birthDate = new Date(); }
 
-		Patient patient = new Patient(firstName, lastName, gender, birthDate, company);;
+        String insurance = Factory.getRandomInsurance();
+        
+		Patient patient = new Patient(firstName, lastName, gender, birthDate, insurance);;
 		patients.add(patient);
 		
-		Product product = new Product(productName, company);;
+		Product product = new Product(productName, productType, productCategory, insurance, null);
 		products.add(product);
 
 		orders.add(new Order(patient, product));

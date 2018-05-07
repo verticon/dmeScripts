@@ -25,53 +25,12 @@ public class ProductController implements Serializable {
         initTable();        
     }
 
-    // ********************************* Add New Product ***************************************
-
-	private Product newProduct;
-
-    public String addNew() {
-    	newProduct = new Product();
-        return null;
-    }
-
-    public Product getNewProduct() { return newProduct; }
-
-    public String save() {
-    	dataService.addProduct(newProduct);
-        table.add(newProduct);
-        cancel();
-        return null;
-    }
-
-    public String cancel() {
-    	newProduct = null;
-        return null;
-    }
-
-    public List<SelectItem> getInsuranceCompanies() {
-        List<SelectItem> list = new ArrayList<SelectItem>();
-        Factory.insuranceCompanies.forEach(company -> list.add(new SelectItem(company, company)));
-        return list;
-    }
-
-    public boolean getAddingNew() { return newProduct != null; }
-
     // ********************************* The Products Table ***************************************
 
-    private Product target;
     private List<Product> table;
 
     private void initTable() { table = dataService.getProducts(); }
 
     public List<Product> getTable() { return table; }
-
-    public void setTarget(Product product) { target = product; }
-
-    public String delete() {
-    	dataService.removeProduct(target);
-        table.remove(target);
-        return null;
-    }
-
 }
 

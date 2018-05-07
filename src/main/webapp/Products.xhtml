@@ -16,35 +16,6 @@
 		<h:outputText value="&#160;" />
 
 		<table align="center" width="600">
-		    <tr><td><h:form rendered="#{!productController.addingNew}"  class="buttons">
-	 			<h:outputText value="Products:  " styleClass="tableName"/>
-	    	    <h:commandButton accesskey="n" action="#{productController.addNew}" value="Add"  styleClass="demo"/>
-	    	</h:form></td></tr>
-
-		    <tr><td><h:form rendered="#{productController.addingNew}" styleClass="demo">
-				<fieldset>
-					<legend>New Product</legend>
-			        	<h:panelGrid columns="3">
-			
-			            	<h:outputText value="Name"></h:outputText>
-				            <h:inputText value="#{productController.newProduct.name}" id = "name" required="true" requiredMessage="Name is required"></h:inputText>
-			  				<h:message for="name" errorClass="error"/>
-			
-			    	        <h:outputText value="Insurance"></h:outputText>
-			        	    <h:selectOneMenu validatorMessage="required" value="#{productController.newProduct.insurance}">
-			            	    <f:selectItems value="#{productController.insuranceCompanies}" />
-			            	</h:selectOneMenu>
-			
-			        	</h:panelGrid>
-			
-			        	<h:panelGroup>
-			            	<h:commandButton action="#{productController.save}" value="Save" accesskey="s"></h:commandButton>
-			            	<h:commandButton action="#{productController.cancel}" value="Cancel" accesskey="c" immediate="true"></h:commandButton>
-			        	</h:panelGroup>
-				</fieldset>
-
-				<h:outputText value="&#160;" />
-		    </h:form></td></tr>
 
 	    	<tr><td><h:form>
 	        	<h:dataTable value="#{productController.table}" var="product" styleClass="demo" columnClasses="columns, columns">
@@ -65,19 +36,6 @@
 	            	        </h:column>
 	                	</f:facet>
 	                	<h:outputText value="#{product.insurance}"></h:outputText>
-	            	</h:column>
-	
-		            <h:column>
-		                <f:facet name="header">
-	    	                <h:column>
-	        	                <h:outputText value="Actions"></h:outputText>
-	            	        </h:column>
-	                	</f:facet>
-		                <h:panelGrid columns="1">
-	    	                <h:commandLink value="delete" action="#{productController.delete}">
-	        	                <f:setPropertyActionListener target="#{productController.target}" value="#{product}" />
-	            	        </h:commandLink>
-	                	</h:panelGrid>
 	            	</h:column>
 	
 	        	</h:dataTable>
