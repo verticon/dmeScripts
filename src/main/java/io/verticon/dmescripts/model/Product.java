@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
@@ -30,7 +31,7 @@ public class Product {
     private String name;
     private String type;
     private String category;
-    private String insurance;
+    private String manufacturer;
     private String imageUrl;
 
 	@OneToMany(mappedBy = "product")
@@ -38,12 +39,12 @@ public class Product {
 
 	public Product() {}
 
-	public Product(String name, String type, String category, String insurance, String imageUrl) {
+	public Product(String name, String type, String category, String manufacturer, String imageUrl) {
 		id = idCounter++;
 		this.name = name;
 		this.type = type;
 		this.category = category;
-		this.insurance = insurance;
+		this.manufacturer = manufacturer;
 		this.imageUrl = imageUrl;
 	}
 	
@@ -84,12 +85,12 @@ public class Product {
         this.imageUrl = imageUrl;
     }
 
-    public String getInsurance() {
-        return insurance;
+    public String getManufacturer() {
+        return manufacturer;
     }
 
-    public void setInsurance(String insurance) {
-        this.insurance = insurance;
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
     public List<Order> getOrders() {
@@ -114,14 +115,38 @@ public class Product {
 
     @Override
     public String toString() {
-        return String.format("%s: Name=%s Insurance=%s", Product.class.getSimpleName(), name, insurance);
+        return name;
     }
 
+    //**************************************************************************************************
+
+    	
     public static class Load {
 
     	private DataAccessService dataService = Factory.sDataService;
 
-    	private void loadCategories(String type, HtmlPage page) throws Exception {
+        private void loadProducts() {
+
+        	LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+        	java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit.DefaultCssErrorHandler").setLevel(Level.SEVERE); 
+
+        	try (final WebClient webClient = new WebClient()) {
+
+        		webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+        		webClient.getOptions().setCssEnabled(false);
+
+            	HtmlPage page = webClient.getPage("https://aeroflowinc.com/shop/catheters");
+            	loadType("Catheters", page);
+
+            	page = webClient.getPage("https://aeroflowinc.com/shop/incontinence");
+            	loadType("Incontinence", page);
+            }
+            catch (Exception ex) {
+            	System.err.printf("An exception occurred while loading product data:\n%s\n", ex);
+            }
+        }
+
+    	private void loadType(String type, HtmlPage page) throws Exception {
 
         	System.out.printf("\n%s:\n", type);
 
@@ -134,18 +159,42 @@ public class Product {
         	selector = String.format(".%s", className);
         	DomNodeList<DomNode> theAnchors = theCategories.querySelectorAll(selector);
         	if (theAnchors == null) throw new Exception("Cannot get the list of product categories"); 
-        	for (DomNode theNode : theAnchors) {
-            	loadCategory(type, (HtmlAnchor) theNode);
+        	for (DomNode node : theAnchors) {
+        		HtmlAnchor anchor = (HtmlAnchor)node;
+            	String category = anchor.getAttribute("title");
+            	HtmlPage categoryPage = anchor.click();
+            	if (categoryPage == null) throw new Exception(String.format("Cannot get the %s page", category)); 
+            	loadCategory(type,  category, categoryPage);
         	}
     	}
 
-        private void loadCategory(String type, HtmlAnchor anchor) throws Exception {
+        private void loadCategory(String type, String category, HtmlPage page) throws Exception {
 
-        	String category = anchor.getAttribute("title");
         	System.out.printf("\n\t%s:\n", category);
 
-        	HtmlPage page = anchor.click();
-        	if (page == null) throw new Exception(String.format("Cannot get the %s products page", category)); 
+        	DomNodeList<DomElement> theDefinitionTerms = page.getElementsByTagName("dt");
+        	for (DomElement theTerm : theDefinitionTerms) {
+        		if (theTerm.getTextContent().equals("Manufacturer")) {
+        			for (DomElement theElement : theTerm.getParentNode().getHtmlElementDescendants()) {
+        				if (theElement instanceof HtmlAnchor) {
+        					HtmlAnchor theAnchor = (HtmlAnchor)theElement;
+        					if (theAnchor.getHrefAttribute().contains("?manufacturer=")) {
+        						String theManufacturer = theAnchor.getTextContent();
+        		            	HtmlPage theManufacturerPage = theAnchor.click();
+        		            	if (theManufacturerPage == null) throw new Exception(String.format("Cannot get the %s page", theManufacturer)); 
+        		            	loadManufacturer(type,  category, theManufacturer, theManufacturerPage);
+        					}
+        				}
+        			}
+        			return;
+        		}
+        	}
+        	loadManufacturer(type,  category, "<Unknown>", page);
+        }
+
+        private void loadManufacturer(String type, String category, String manufacturer, HtmlPage page) throws Exception {
+
+        	System.out.printf("\n\t\t%s:\n", manufacturer);
 
         	String className = "category-products";
         	String selector = String.format(".%s", className);
@@ -171,36 +220,16 @@ public class Product {
             	HtmlImage theProductImage = (HtmlImage) theProductImageNode.getFirstByXPath("a/img");
             	String theProductImageUrl = theProductImage.getAttribute("src");
 
-            	dataService.addProduct(new Product(theProductName, type, category, Factory.getRandomInsurance(), theProductImageUrl));
+            	dataService.addProduct(new Product(theProductName, type, category, manufacturer, theProductImageUrl));
 
-            	System.out.printf("\t\t%s\n", theProductName);
+            	System.out.printf("\t\t\t%s\n", theProductName);
         	}
         }
 
-        private void loadProductData() {
-
-        	LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-        	java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit.DefaultCssErrorHandler").setLevel(Level.SEVERE); 
-
-        	try (final WebClient webClient = new WebClient()) {
-
-        		webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-        		webClient.getOptions().setCssEnabled(false);
-
-        		String url = "https://aeroflowinc.com/shop/catheters?limit=36";
-            	HtmlPage page = webClient.getPage(url);
-
-            	loadCategories("Catheters", page);
-            }
-            catch (Exception ex) {
-            	System.err.printf("An exception occurred while loading product data:\n%s\n", ex);
-            }
-        }
-
         public static void main(String[] args) {
-        	System.out.println("Loading Product Data ...");
-        	new Load().loadProductData();
-        	System.out.println("\nProduct Data Loaded");
+        	System.out.println("Loading Products ...");
+        	new Load().loadProducts();
+        	System.out.println("\nProducts Loaded");
         }
     }
 }

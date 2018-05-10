@@ -1,13 +1,14 @@
 package io.verticon.dmescripts.controllers;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 
 import io.verticon.dmescripts.Factory;
 import io.verticon.dmescripts.model.*;
@@ -37,8 +38,8 @@ public class OrderController implements Serializable {
     }
 
     public String save() {
-    	dataService.addOrder(newOrder, patient, product);
-        table.add(newOrder);   
+    	//dataService.addOrder(newOrder, patient, product);
+        //table.add(newOrder);   
     	cancel();
     	
     	/*
@@ -92,10 +93,8 @@ public class OrderController implements Serializable {
         if (patients.size() > 0) patient = patients.get(0);
     }
 
-    public List<SelectItem> getPatients() {
-        List<SelectItem> list = new ArrayList<SelectItem>();
-        patients.forEach(patient -> list.add(new SelectItem(patient.getId(), patient.getFullName())));
-        return list;
+    public List<Patient> getPatients() {
+    	return patients;
     }
 
     public Long getPatientId() {
@@ -113,47 +112,46 @@ public class OrderController implements Serializable {
     	});
     }
 
-	/************************ The Products Menu **********************************/
+    public void patientSelectionChanged() {
+        // System.out.printf("Selected patient changed to %s\n", patient.getFullName());
+    }
 
-	private Product product;
+	/************************ The Product Tree **********************************/
+
     private List<Product> products;
+    private TreeNode productTree;
 
     private void initProducts() {
     	products = dataService.getProducts();
-        if (products.size() > 0) product = products.get(0);
-        //System.out.printf("Init products; count = %d\n", products.size());
+
+    	productTree = new DefaultTreeNode("Products", null);
+    	products.forEach(product -> {
+    		TreeNode typeNode = getChild(productTree, product.getType());
+    		TreeNode categoryNode = getChild(typeNode, product.getCategory());
+    		TreeNode manufacturerNode = getChild(categoryNode, product.getManufacturer());
+    		manufacturerNode.getChildren().add(new DefaultTreeNode(product));
+    	});
+    	productTree.setExpanded(true);
     }
 
-    public List<SelectItem> getProducts() {
-        List<SelectItem> list = new ArrayList<SelectItem>();
-        if (patient != null) {
-            products.forEach(product -> {
-            	if (product.getInsurance().equals(patient.getInsurance())) {
-                    list.add(new SelectItem(product.getId(), product.getName()));
-            	}
-            });
-        }
-        //System.out.printf("Get products; count = %d\n", list.size());
-        return list;
+    private TreeNode getChild(TreeNode parent, String name) {
+    	for (TreeNode child : parent.getChildren()) {
+    		if (((String) child.getData()).equals(name)) { return child; }
+    	}
+        TreeNode child = new DefaultTreeNode(name, parent);
+    	return child;
+    }
+
+    public TreeNode getProductTree() {
+        return productTree;
+    }
+
+    public void productSelectionChanged() {
+        //System.out.printf("Selected product changed to %s\n", product.getName());
     }
 
     public String getProductImageUrl() {
-    	return product == null ? null : product.getImageUrl();
-    }
-
-    public Long getProductId() {
-        //System.out.printf("Getting current product id: %d\n", product == null ? -1 : product.getId());
-    	return product == null ? 0 : product.getId();
-    }
-
-    public void setProductId(Long id) {
-        //System.out.printf("Setting current product, id = %d\n", id);
-    	products.forEach(product -> {
-    		if (product.getId().longValue() == id.longValue()) {
-    			this.product = product;
-    	        //System.out.printf("Current product set to %s\n", product.getName());
-    		}
-    	});
+    	return products.get(0).getImageUrl();
     }
 
 }
