@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+		<title>PrimeFaces Tree</title>
+    </h:head>
+    <h:body> 
+    	<h:outputStylesheet library="default" name="css/test.css"  />
+
+		<h3>PrimeFaces Tree</h3>
+
+		<h:form>
+			<p:tree id="tree" widgetVar="treeW" value="#{testController.root}" orientation="horizontal" var="node" selectionMode="single">
+			    <p:treeNode type="visible">
+			        <h:outputText value="#{node}" />
+			    </p:treeNode>			
+			    <p:treeNode>
+			        <h:outputText value="#{node}" />
+			    </p:treeNode>
+			
+			    <p:ajax event="expand" listener="#{testController.onNodeExpanded}" oncomplete="closeOthers(this, PF('treeW'))"/>
+			</p:tree>
+
+			<h:outputScript>
+			
+			//<![CDATA[
+			/*
+			function closeOthers(current, widget) {
+			
+			    var dataRowkey = $.urlParam(decodeURIComponent(current.data),current.source+"_expandNode");
+
+			    //For a vertical tree:      
+			    //var selector = "li[data-rowkey='"+dataRowkey+"']";
+			    //$(widget.jq).find(selector).siblings().find("span[aria-expanded='true']").siblings(".ui-tree-toggler").trigger("click");
+
+			    //For a horizontal tree
+			    var selector = "td[data-rowkey='" + dataRowkey + "']";
+			    $(widget.jq).find(selector).parent().parent().parent().siblings().find("td[aria-expanded='true']").find(".ui-tree-toggler").trigger("click");
+			}			
+			
+			$.urlParam = function (query, name) {
+				var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(query);
+			    return (results !== null) ? results[1] || 0 : false;
+			}
+			*/
+			//]]>
+
+			</h:outputScript>
+
+	        <h:commandButton value="Update" immediate="true">
+	            <f:ajax render="tree" />
+	        </h:commandButton>
+
+		</h:form>
+	</h:body>
+</html>

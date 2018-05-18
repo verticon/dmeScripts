@@ -60,3 +60,20 @@ legend {
     margin-left: auto;
     margin-right: auto;
 }
+
+.ui-tree {
+	background-color: #9fd1ff;
+	vertical-align: top;
+}
+
+td[data-nodetype="default"] {
+    display: none;
+}
+
+.productItems {
+	background-color: #afc4d6;
+	overflow-y: auto;
+	width: 350px;
+	height: 500px;
+	background: #afc4d6;
+}

@@ -50,10 +50,8 @@ public class PatientController implements Serializable {
         return null;
     }
 
-    public List<SelectItem> getInsuranceCompanies() {
-        List<SelectItem> list = new ArrayList<SelectItem>();
-        Factory.insuranceCompanies.forEach(company -> list.add(new SelectItem(company, company)));
-        return list;
+    public List<String> getInsuranceCompanies() {
+        return Factory.insuranceCompanies;
     }
 
     public boolean getAddingNew() { return newPatient != null; }

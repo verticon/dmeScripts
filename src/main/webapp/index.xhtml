@@ -8,91 +8,113 @@
 	xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-    	<h:outputStylesheet library="default" name="css/style.css"  />
         <title>DME Scripts Demo</title>
     </h:head>
     <h:body> 
+    	<h:outputStylesheet library="default" name="css/style.css"  />	<!-- Place in body to insure that my styles load after PrimeFaces' -->
+
 		<h3 class="title">DME Scripts Demo</h3>
 		<h:outputText value="&#160;" />
+			
+    	<h:form id="orderProduct" styleClass="demo">
 
-		<table align="center" width="600">
-	 		<tr><td><h:form rendered="#{!orderController.addingNew}" class="buttons">
-	 			<h:outputText value="Orders:  " styleClass="tableName"/>
-	    	    <h:commandButton accesskey="n" action="#{orderController.addNew}" value="Add" styleClass="demo"/>
-		    </h:form></td></tr>
+	    	<h:panelGroup id="selectedProduct">
+            	<h:outputText value="#{orderController.selectedProduct}" />
+        	    <h:commandButton value="Order" rendered="#{orderController.selectedProduct != null}" styleClass="demo">
+					<f:ajax listener="#{orderController.orderItem}" render="orderStatus" />
+        	    </h:commandButton>
+          		<h:outputText id="orderStatus" value="#{orderController.orderStatus}" rendered="#{orderController.selectedProduct != null}" />
+		    </h:panelGroup>
+
+			<p:panelGrid>
+				<p:row>
+					<p:column style="vertical-align: top;">
+							<p:tree id="categories" widgetVar="categoryTree" value="#{orderController.categories}" var="node" orientation="horizontal" selectionMode="single" >
+								<p:treeNode type="type">
+									<h:outputText value="#{node}" />
+								</p:treeNode>
+								<p:treeNode type="category">
+									<h:outputText value="#{node}" />
+								</p:treeNode>
+								<p:treeNode type="manufacturer">
+									<h:outputText value="#{node}" />
+								</p:treeNode>
+								<p:treeNode styleClass="hidden">
+									<h:outputText value="#{node}" style="color: yellow;"/>
+								</p:treeNode>
 	
-	    	<tr><td><h:form rendered="#{orderController.addingNew}" styleClass="demo">
-				<fieldset>
-					<legend>New Order</legend>
+								<p:ajax event="expand" listener="#{orderController.onCategoryNodeExpanded}" oncomplete="closeOthers(this, PF('categoryTree'))"/>
+								<p:ajax event="select" listener="#{orderController.onProductNodeSelected}" update="orderProduct:selectedProduct" />
+							</p:tree>
 
-		        	<h:panelGrid columns="2">
-		            	<h:outputText value="Patient"></h:outputText>
-						<h:selectOneMenu value="#{orderController.patientId}">
-							<f:selectItems value="#{orderController.patients}" var="patient" itemValue="#{patient.id}" itemLabel="#{patient.fullName}" />
-							<f:ajax listener="#{orderController.patientSelectionChanged}" />
-						</h:selectOneMenu>
-		
-						<p:tree value="#{orderController.productTree}" var="node" dynamic="true" orientation="horizontal">
-							<p:treeNode>
-								<h:outputText value="#{node}" />
-							</p:treeNode>
-						</p:tree>
+							<p:contextMenu for="categories"/>
+							<p:contextMenu for="categories" nodeType="category">
+								<p:menuitem value="Order" actionListener="#{orderController.orderItem}" update="orderProduct:selectedProduct" />
+							</p:contextMenu>
+							<p:contextMenu for="categories" nodeType="manufacturer">
+								<p:menuitem value="Favorite" actionListener="#{orderController.saveFovorite}" />
+							</p:contextMenu>
+							<p:contextMenu for="categories" nodeType="item">
+								<p:menuitem value="Order" actionListener="#{orderController.orderItem}" update="orderProduct:selectedProduct" />
+								<p:menuitem value="Favorite" actionListener="#{orderController.saveFovorite}" />
+							</p:contextMenu>
 
-						<h:graphicImage url="#{orderController.productImageUrl}" id="productImage"/>
-		        	</h:panelGrid>
-		
-		    	    <h:panelGroup>
-		        	    <h:commandButton value="Save" action="#{orderController.save}" accesskey="s" styleClass="demo"/>
-		            	<h:commandButton value="Cancel" action="#{orderController.cancel}" accesskey="c" immediate="true" styleClass="demo"/>
-			        </h:panelGroup>
-				</fieldset>
-
-				<h:outputText value="&#160;" />
-	    	</h:form></td></tr>
-
-	    	<tr><td><h:form>
-	        	<h:dataTable value="#{orderController.table}" var="order" styleClass="demo" columnClasses="columns, columns">
-		            <h:column>
-	    	            <f:facet name="header">
-	        	            <h:column>
-	            	            <h:outputText value="Patient"></h:outputText>
-	                	    </h:column>
-		                </f:facet>
-	    	            <h:outputText value="#{order.patient.fullName}"></h:outputText>
-	        	    </h:column>
+							<h:outputScript>
+							
+							//<![CDATA[
+							
+							function closeOthers(current, widget) {
+							
+							    var dataRowkey = $.urlParam(decodeURIComponent(current.data),current.source+"_expandNode");
+				
+							    //For a vertical tree:      
+							    //var selector = "li[data-rowkey='"+dataRowkey+"']";
+							    //$(widget.jq).find(selector).siblings().find("span[aria-expanded='true']").siblings(".ui-tree-toggler").trigger("click");
+				
+							    //For a horizontal tree
+							    var selector = "td[data-rowkey='" + dataRowkey + "']";
+							    $(widget.jq).find(selector).parent().parent().parent().siblings().find(".ui-icon-minus").trigger("click");
+							}			
+							
+							$.urlParam = function (query, name) {
+								var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(query);
+							    return (results !== null) ? results[1] || 0 : false;
+							}
+							
+							//]]>
+				
+							</h:outputScript>
+					</p:column>
+					<p:column>
+			        	<p:panel styleClass="productItems">
+							<p:tree value="#{orderController.items}" var="node" dynamic="true" orientation="horizontal" selectionMode="single" >
+								<p:treeNode type="item">
+			        				<p:panelGrid>
+			        					<p:row>
+			        						<p:column width="100">
+												<h:graphicImage url="#{node.imageUrl}"/>
+			        						</p:column>
+			        					</p:row>
+			        					<p:row>
+			        						<p:column width="100">
+												<h:outputText value="#{node}" />
+			        						</p:column>
+			        					</p:row>
+						        	</p:panelGrid>
+								</p:treeNode>
+								<p:treeNode>
+									<h:outputText value="#{node}" />
+								</p:treeNode>
 	
-		            <h:column>
-	    	            <f:facet name="header">
-	        	            <h:column>
-	            	            <h:outputText value="Product"></h:outputText>
-	                	    </h:column>
-		                </f:facet>
-	    	            <h:outputText value="#{order.product.name}"></h:outputText>
-	        	    </h:column>
-	
-		            <h:column>
-	    	            <f:facet name="header">
-	        	            <h:column>
-	            	            <h:outputText value="Actions"></h:outputText>
-	                	    </h:column>
-		                </f:facet>
-	    	            <h:panelGrid columns="1">
-	        	            <h:commandLink value="delete" action="#{orderController.delete}">
-	            	            <f:setPropertyActionListener target="#{orderController.target}" value="#{order}" />
-	                	    </h:commandLink>
-		                </h:panelGrid>
-	    	        </h:column>
-	        	</h:dataTable>
+								<p:ajax event="select" listener="#{orderController.onProductNodeSelected}" update="orderProduct:selectedProduct" />
+							</p:tree>
+						</p:panel>
+					</p:column>
+				</p:row>
 
-				<h:outputText value="&#160;" />
-	    	</h:form></td></tr>
-	
-	
-	 		<tr><td><h:form class="buttons">
-				<h:commandButton value="Patients" action="Patients" styleClass="demo"/>
-				<h:commandButton value="Products" action="Products" styleClass="demo"/>
-		    </h:form></td></tr>
+			</p:panelGrid>
 
-    	</table>
+    	</h:form>
+
 	</h:body>
 </html>

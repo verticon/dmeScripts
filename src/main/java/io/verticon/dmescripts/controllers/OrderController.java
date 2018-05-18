@@ -1,12 +1,15 @@
 package io.verticon.dmescripts.controllers;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.primefaces.event.NodeExpandEvent;
+import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -30,41 +33,15 @@ public class OrderController implements Serializable {
 
     // ********************************* Add New Order ***************************************
 
-	private Order newOrder;
+    private String orderStatus;
 
-	public String addNew() {
-		newOrder = new Order();
-        return null;
+    public void orderItem() {
+    	orderStatus = String.format("   Order Placed %s", new Date());
     }
 
-    public String save() {
-    	//dataService.addOrder(newOrder, patient, product);
-        //table.add(newOrder);   
-    	cancel();
-    	
-    	/*
-		import javax.faces.context.ExternalContext;
-		import javax.faces.context.FacesContext;
-		import javax.servlet.http.HttpServletRequest;
-
-        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-        try {
-			ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-
-        return null;
+    public String getOrderStatus() {
+    	return orderStatus;
     }
-
-    public String cancel() {
-    	newOrder = null;
-        return null;
-    }
-
-    public boolean getAddingNew() { return newOrder != null; }
 
     // ********************************* The Orders Table ***************************************
 
@@ -118,40 +95,75 @@ public class OrderController implements Serializable {
 
 	/************************ The Product Tree **********************************/
 
-    private List<Product> products;
-    private TreeNode productTree;
+    private TreeNode categories;
+    private TreeNode items;
+    private String selectedProduct;
 
     private void initProducts() {
-    	products = dataService.getProducts();
+    	List<Product> products = dataService.getProducts();
 
-    	productTree = new DefaultTreeNode("Products", null);
+    	categories = new DefaultTreeNode("Categories", null);
+    	items = new DefaultTreeNode("Items", null);
     	products.forEach(product -> {
-    		TreeNode typeNode = getChild(productTree, product.getType());
-    		TreeNode categoryNode = getChild(typeNode, product.getCategory());
-    		TreeNode manufacturerNode = getChild(categoryNode, product.getManufacturer());
-    		manufacturerNode.getChildren().add(new DefaultTreeNode(product));
+    		TreeNode typeNode = getChild(categories, "type", product.getType());
+    		TreeNode categoryNode = getChild(typeNode, "category", product.getCategory());
+    		getChild(categoryNode, "manufacturer", product.getManufacturer());
+
+    		items.getChildren().add(new DefaultTreeNode("item", product, items));
     	});
-    	productTree.setExpanded(true);
+    	categories.setExpanded(true);
+    	items.setExpanded(true);
     }
 
-    private TreeNode getChild(TreeNode parent, String name) {
+    private TreeNode getChild(TreeNode parent, String type, Object data) {
     	for (TreeNode child : parent.getChildren()) {
-    		if (((String) child.getData()).equals(name)) { return child; }
+    		if (child.getData().equals(data)) { return child; }
     	}
-        TreeNode child = new DefaultTreeNode(name, parent);
-    	return child;
+        return new DefaultTreeNode(type, data, parent);
     }
 
-    public TreeNode getProductTree() {
-        return productTree;
+    public TreeNode getCategories() {
+        return categories;
     }
 
-    public void productSelectionChanged() {
-        //System.out.printf("Selected product changed to %s\n", product.getName());
+    public TreeNode getItems() {
+        return items;
     }
 
-    public String getProductImageUrl() {
-    	return products.get(0).getImageUrl();
+    public void onCategoryNodeExpanded(NodeExpandEvent event) {
+    	TreeNode expandedNode = event.getTreeNode();
+    	//System.out.printf("\nExpanded %s\n", expandedNode);
+
+    	TreeNode parent = expandedNode.getParent();
+    	if (parent != null) {
+        	for (TreeNode sibling : parent.getChildren()) {
+        		if (sibling.isExpanded() && sibling != expandedNode) {
+        			sibling.setExpanded(false);
+        	    	//System.out.printf("Collapsed %s\n", sibling);
+        		}
+        	}
+    	}
+    
+    	orderStatus = null;
+    }
+
+    public void onProductNodeSelected(NodeSelectEvent event) {
+    	TreeNode selectedNode = event.getTreeNode();
+    	//System.out.printf("Selected %s\n", selectedNode.getData());
+    	if (selectedNode.getType().equals("category") || (selectedNode.getData() instanceof Product)) {
+    		selectedProduct = selectedNode.getData().toString();
+    	}
+    	else {
+    		selectedProduct = null;
+    	}
+
+    	orderStatus = null;
+    }
+
+    public String getSelectedProduct() { return selectedProduct; }
+
+    public void saveFovorite() {
+    	System.out.printf("Fovorited %s\n", selectedProduct);
     }
 
 }
