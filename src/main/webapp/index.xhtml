@@ -16,103 +16,10 @@
 		<h3 class="title">DME Scripts Demo</h3>
 		<h:outputText value="&#160;" />
 			
-    	<h:form id="orderProduct" styleClass="demo">
+    	<h:form styleClass="demo">
 
-	    	<h:panelGroup id="selectedProduct">
-            	<h:outputText value="#{orderController.selectedProduct}" />
-        	    <h:commandButton value="Order" rendered="#{orderController.selectedProduct != null}" styleClass="demo">
-					<f:ajax listener="#{orderController.orderItem}" render="orderStatus" />
-        	    </h:commandButton>
-          		<h:outputText id="orderStatus" value="#{orderController.orderStatus}" rendered="#{orderController.selectedProduct != null}" />
-		    </h:panelGroup>
-
-			<p:panelGrid>
-				<p:row>
-					<p:column style="vertical-align: top;">
-							<p:tree id="categories" widgetVar="categoryTree" value="#{orderController.categories}" var="node" orientation="horizontal" selectionMode="single" >
-								<p:treeNode type="type">
-									<h:outputText value="#{node}" />
-								</p:treeNode>
-								<p:treeNode type="category">
-									<h:outputText value="#{node}" />
-								</p:treeNode>
-								<p:treeNode type="manufacturer">
-									<h:outputText value="#{node}" />
-								</p:treeNode>
-								<p:treeNode styleClass="hidden">
-									<h:outputText value="#{node}" style="color: yellow;"/>
-								</p:treeNode>
-	
-								<p:ajax event="expand" listener="#{orderController.onCategoryNodeExpanded}" oncomplete="closeOthers(this, PF('categoryTree'))"/>
-								<p:ajax event="select" listener="#{orderController.onProductNodeSelected}" update="orderProduct:selectedProduct" />
-							</p:tree>
-
-							<p:contextMenu for="categories"/>
-							<p:contextMenu for="categories" nodeType="category">
-								<p:menuitem value="Order" actionListener="#{orderController.orderItem}" update="orderProduct:selectedProduct" />
-							</p:contextMenu>
-							<p:contextMenu for="categories" nodeType="manufacturer">
-								<p:menuitem value="Favorite" actionListener="#{orderController.saveFovorite}" />
-							</p:contextMenu>
-							<p:contextMenu for="categories" nodeType="item">
-								<p:menuitem value="Order" actionListener="#{orderController.orderItem}" update="orderProduct:selectedProduct" />
-								<p:menuitem value="Favorite" actionListener="#{orderController.saveFovorite}" />
-							</p:contextMenu>
-
-							<h:outputScript>
-							
-							//<![CDATA[
-							
-							function closeOthers(current, widget) {
-							
-							    var dataRowkey = $.urlParam(decodeURIComponent(current.data),current.source+"_expandNode");
-				
-							    //For a vertical tree:      
-							    //var selector = "li[data-rowkey='"+dataRowkey+"']";
-							    //$(widget.jq).find(selector).siblings().find("span[aria-expanded='true']").siblings(".ui-tree-toggler").trigger("click");
-				
-							    //For a horizontal tree
-							    var selector = "td[data-rowkey='" + dataRowkey + "']";
-							    $(widget.jq).find(selector).parent().parent().parent().siblings().find(".ui-icon-minus").trigger("click");
-							}			
-							
-							$.urlParam = function (query, name) {
-								var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(query);
-							    return (results !== null) ? results[1] || 0 : false;
-							}
-							
-							//]]>
-				
-							</h:outputScript>
-					</p:column>
-					<p:column>
-			        	<p:panel styleClass="productItems">
-							<p:tree value="#{orderController.items}" var="node" dynamic="true" orientation="horizontal" selectionMode="single" >
-								<p:treeNode type="item">
-			        				<p:panelGrid>
-			        					<p:row>
-			        						<p:column width="100">
-												<h:graphicImage url="#{node.imageUrl}"/>
-			        						</p:column>
-			        					</p:row>
-			        					<p:row>
-			        						<p:column width="100">
-												<h:outputText value="#{node}" />
-			        						</p:column>
-			        					</p:row>
-						        	</p:panelGrid>
-								</p:treeNode>
-								<p:treeNode>
-									<h:outputText value="#{node}" />
-								</p:treeNode>
-	
-								<p:ajax event="select" listener="#{orderController.onProductNodeSelected}" update="orderProduct:selectedProduct" />
-							</p:tree>
-						</p:panel>
-					</p:column>
-				</p:row>
-
-			</p:panelGrid>
+			<h:commandButton value="Orders 1" action="Orders1" />
+			<h:commandButton value="Orders 2" action="Orders2" />
 
     	</h:form>
 

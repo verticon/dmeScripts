@@ -18,7 +18,7 @@ import io.verticon.dmescripts.model.*;
 
 @Named
 @ViewScoped
-public class OrderController implements Serializable {
+public class OrderController1 implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -132,14 +132,14 @@ public class OrderController implements Serializable {
 
     public void onCategoryNodeExpanded(NodeExpandEvent event) {
     	TreeNode expandedNode = event.getTreeNode();
-    	//System.out.printf("\nExpanded %s\n", expandedNode);
+    	System.out.printf("\nExpanded %s\n", expandedNode);
 
     	TreeNode parent = expandedNode.getParent();
     	if (parent != null) {
         	for (TreeNode sibling : parent.getChildren()) {
         		if (sibling.isExpanded() && sibling != expandedNode) {
         			sibling.setExpanded(false);
-        	    	//System.out.printf("Collapsed %s\n", sibling);
+        	    	System.out.printf("Collapsed %s\n", sibling);
         		}
         	}
     	}

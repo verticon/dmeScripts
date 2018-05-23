@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>DME Scripts Demo</title>
+    </h:head>
+    <h:body> 
+    	<h:outputStylesheet library="default" name="css/style.css"  />	<!-- Place in body to insure that my styles load after PrimeFaces' -->
+
+		<h3 class="title">DME Scripts Order</h3>
+		<h:outputText value="&#160;" />
+			
+    	<h:form id="orderProduct" styleClass="demo">
+
+	    	<h:panelGroup id="selectedProduct" >
+            	<h:outputText value="#{orderController2.selectedProduct}" />
+        	    <h:commandButton value="Order" styleClass="demo" rendered="#{orderController2.selectedProduct != null}">
+					<f:ajax listener="#{orderController2.orderItem}" render="orderStatus" />
+        	    </h:commandButton>
+          		<h:outputText id="orderStatus" value="#{orderController2.orderStatus}" />
+		    </h:panelGroup>
+
+			<p:panelGrid>
+				<p:row style="background-color: #afc4d6;">
+					<p:column>
+						<p:tree id="catheters" widgetVar="catheterTree" value="#{orderController2.catheters}" var="node" orientation="horizontal" selectionMode="single" >
+							<p:treeNode type="category">
+								<h:outputText value="#{node}" />
+							</p:treeNode>
+							<p:treeNode type="hcpc">
+								<h:outputText value="#{node}" />
+							</p:treeNode>
+							<p:treeNode styleClass="hidden"/>
+			
+							<p:ajax event="expand" listener="#{orderController2.onNodeExpanded}" oncomplete="postProcessExpand(this, PF('catheterTree'))"/>
+							<p:ajax event="collapse" listener="#{orderController2.onNodeCollapsed}"/>
+							<p:ajax event="select" listener="#{orderController2.onNodeSelected}" update="orderProduct:selectedProduct orderProduct:details" oncomplete="postProcessSelect(this, PF('catheterTree'))"/>
+						</p:tree>
+			
+						<p:contextMenu for="catheters"/>
+						<p:contextMenu for="catheters" nodeType="category">
+							<p:menuitem value="Order" actionListener="#{orderController2.orderItem}" update="orderProduct:selectedProduct" />
+						</p:contextMenu>
+						<p:contextMenu for="catheters" nodeType="manufacturer">
+							<p:menuitem value="Favorite" actionListener="#{orderController2.saveFovorite}" />
+						</p:contextMenu>
+						<p:contextMenu for="catheters" nodeType="item">
+							<p:menuitem value="Order" actionListener="#{orderController2.orderItem}" update="orderProduct:selectedProduct" />
+							<p:menuitem value="Favorite" actionListener="#{orderController2.saveFovorite}" />
+						</p:contextMenu>
+			
+					</p:column>
+					<p:column>
+						<h:panelGroup id="details">
+						    <h:panelGrid columns="1" rendered="#{orderController2.displayPanel(1)}" style="background-color: #9fd1ff;">
+
+								<h:panelGroup>
+	        						<h:outputLabel for="quantity" value="Quantity (per month):" style="margin-right: 8px"/>
+	        						<p:spinner id="quantity" value="#{orderController2.quantity}" size="2" min="1" max="10" onchange="quantityWarning(this, PF('allowableQuantityDialog'))"/>
+								    <p:dialog widgetVar="allowableQuantityDialog" header="Warning" showEffect="fold" hideEffect="fold">
+								    	<h:outputText value="Medicare requires a medical justification for quantities greater than 1. Approval is not guaranteed." />
+								    </p:dialog>
+								</h:panelGroup>
+
+								<h:panelGroup>
+									<h:outputLabel for="french" value="French:" style="margin-right: 8px"/>
+	        						<p:spinner id="french" value="#{orderController2.french}" size="2" min="6" max="28" stepFactor="2"/>
+								</h:panelGroup>
+ 
+								<h:panelGroup>
+	        						<h:outputLabel for="balloon" value="Balloon:" style="margin-right: 8px"/>
+									<p:selectOneRadio id="balloon" value="#{orderController2.balloon}" style="display: inline-table;">
+			    						<f:selectItems value="#{orderController2.balloonChoices}"/>
+									</p:selectOneRadio>
+								</h:panelGroup>
+
+								<h3>Accessories:</h3>
+							    <p:outputPanel id="accessoryPanel" style="border: 2px solid #ffffff;">
+							        <p:selectManyCheckbox id="accessories" value="#{orderController2.selectedAccessories}" layout="custom">
+							            <f:selectItem itemLabel="Indwelling Catheter Insertion Tray" itemValue="A4310" />
+							            <f:selectItem itemLabel="Irrigation Syringes" itemValue="A4213" />
+							            <f:selectItem itemLabel="Irrigation Solution" itemValue="A4217" />
+							            <f:selectItem itemLabel="Bedside Urine Collection Bag" itemValue="A4357" />
+							            <f:selectItem itemLabel="Leg or Abdominal Urine Collection Bag" itemValue="A4358" />
+							        </p:selectManyCheckbox>
+							 
+							        <div class="ui-grid ui-grid-responsive">
+							            <div class="ui-grid-row">
+							                <div class="ui-grid-col-4" style="text-align:center">
+							                    <h:outputLabel for="opt1" value="Indwelling Catheter Insertion Tray" style="margin-right: 8px"/>
+							                    <p:checkbox id="opt1" for="accessories" itemIndex="0" />
+        										<p:spinner value="#{orderController2.trayQty}" size="2" min="0" max="10" />
+							                </div>
+							                <div class="ui-grid-col-4" style="text-align:center">
+							                    <h:outputLabel for="opt2" value="Irrigation Syringes" style="margin-right: 8px"/>
+							                    <p:checkbox id="opt2" for="accessories" itemIndex="1" />
+        										<p:spinner value="#{orderController2.syringeQty}" size="2" min="0" max="10" />
+							                </div>
+							                <div class="ui-grid-col-4" style="text-align:center">
+							                    <h:outputLabel for="opt3" value="Irrigation Solution" style="margin-right: 8px"/>
+							                    <p:checkbox id="opt3" for="accessories" itemIndex="2" />
+        										<p:spinner value="#{orderController2.solutionQty}" size="2" min="0" max="10" />
+												<p:selectOneRadio value="#{orderController2.solutionType}">
+							            			<f:selectItem itemLabel="saline" itemValue="1" />
+							            			<f:selectItem itemLabel="sterile" itemValue="2" />
+												</p:selectOneRadio>
+							                </div>
+							                <div class="ui-grid-col-4" style="text-align:center">
+							                    <h:outputLabel for="opt4" value="Bedside Urine Collection Bag" style="margin-right: 8px"/>
+							                    <p:checkbox id="opt4" for="accessories" itemIndex="3" />
+        										<p:spinner value="#{orderController2.bedsideBagQty}" size="2" min="0" max="10" />
+							                </div>
+							                <div class="ui-grid-col-4" style="text-align:center">
+							                    <h:outputLabel for="opt5" value="Urine Collection Bag" style="margin-right: 8px"/>
+							                    <p:checkbox id="opt5" for="accessories" itemIndex="4" />
+        										<p:spinner value="#{orderController2.bagQty}" size="2" min="0" max="10" />
+												<p:selectOneRadio value="#{orderController2.bagType}">
+							            			<f:selectItem itemLabel="leg" itemValue="1" />
+							            			<f:selectItem itemLabel="abdominal" itemValue="2" />
+												</p:selectOneRadio>
+							                </div>
+							            </div>
+							        </div>
+							    </p:outputPanel>
+
+								<h3>Medical Necessities:</h3>
+							    <p:outputPanel id="necessitiesPanel" style="border: 2px solid #ffffff;">
+									<h:outputLabel value="#{orderController2.medicalNecessities}"/>
+							    </p:outputPanel>
+
+						    </h:panelGrid>
+						    <h:panelGroup rendered="#{orderController2.displayPanel(2)}">
+								<h:outputLabel value="[To be done (1)]"/>
+						    </h:panelGroup>
+						    <h:panelGroup rendered="#{orderController2.displayPanel(3)}">
+								<h:outputLabel value="[To be done (2)]>"/>
+						    </h:panelGroup>
+						</h:panelGroup>
+					</p:column>
+				</p:row>
+
+				<h:outputScript>
+
+				//<![CDATA[
+	
+				function postProcessExpand(sender, tree) {
+					var node = getNode(sender, tree, "expandNode")
+					// console.log(name(node) + " Expand Postprocessing: selected = " + isSelected(node) + ", expanded = " + isExpandeded(node));
+
+					select(node);
+					collapseSiblings(node)
+
+					console.log("Postprocessing Complete");
+				}
+	
+				function postProcessSelect(sender, tree) {
+					var node = getNode(sender, tree, "selection");
+					// console.log(name(node) + " Select Postprocessing: selected = " + isSelected(node) + ", expanded = " + isExpandeded(node));
+
+					expand(node);
+					collapseSiblings(node);
+
+					console.log("Postprocessing Complete");
+				}
+	
+				function collapseSiblings(node) {
+					var siblings = node.parent().parent().parent().siblings();
+					siblings.find(".ui-icon-minus").trigger("click");
+				}			
+				
+				function getNode(sender, tree, eventName) {
+					var textToSearch = decodeURIComponent(sender.data);
+					var target = sender.source + "_" + eventName;
+					var results = new RegExp('[\?&]' + target + '=([^&#]*)').exec(textToSearch);
+				    if (results === null) return null;
+	
+				    var dataRowKey = results[1] || 0;
+				    var selector = "td[data-rowkey='" + dataRowKey + "']";
+				    return $(tree.jq).find(selector);
+				}			
+
+				function isSelected(node) {
+					return node[0].classList.contains("ui-treenode-selected")
+				}
+
+				function select(node) {
+					//if (!isSelected(node)) {
+				    	node.find(".ui-tree-selectable").trigger("click");
+					//}
+				}
+
+				function isExpandeded(node) {
+					return !node[0].classList.contains("ui-treenode-collapsed")
+				}
+
+				function expand(node) {
+					//if (!isExpandeded(node)) {
+				    	node.find(".ui-icon-plus").trigger("click");
+					//}
+				}
+
+				function name(node) {
+					return node[0].innerText;
+				}
+
+				function quantityWarning(sender, dialog) {
+					var quantity = parseInt(sender.value);
+					console.log("Quantity = " + quantity);
+					if (quantity > 1) { dialog.show(); }
+				}
+
+				//]]>
+
+				</h:outputScript>
+
+			</p:panelGrid>
+
+    	</h:form>
+
+	</h:body>
+</html>
