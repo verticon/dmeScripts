@@ -13,6 +13,8 @@
     <h:body> 
     	<h:outputStylesheet library="default" name="css/style.css"  />	<!-- Place in body to insure that my styles load after PrimeFaces' -->
 
+    	<h:outputScript library="default" name="js/CustomTree.js" />
+
 		<h3 class="title">DME Scripts Order</h3>
 		<h:outputText value="&#160;" />
 			
@@ -39,87 +41,14 @@
 					<p:column>
 						<h:panelGroup id="details">
 						    <h:panelGrid columns="1" rendered="#{orderController2.displayPanel(1)}" style="background-color: #9fd1ff;">
-
-								<h:panelGroup>
-	        						<h:outputLabel for="quantity" value="Quantity (per month):" style="margin-right: 8px"/>
-	        						<p:spinner id="quantity" value="#{orderController2.quantity}" size="2" min="1" max="10" onchange="quantityWarning(this, PF('allowableQuantityDialog'))"/>
-								    <p:dialog widgetVar="allowableQuantityDialog" header="Warning" showEffect="fold" hideEffect="fold">
-								    	<h:outputText value="Medicare requires a medical justification for quantities greater than 1. Approval is not guaranteed." />
-								    </p:dialog>
-								</h:panelGroup>
-
-								<h:panelGroup>
-									<h:outputLabel for="french" value="French:" style="margin-right: 8px"/>
-	        						<!-- p:spinner id="french" value="#{orderController2.french}" size="2" min="6" max="28" stepFactor="2"/ -->
-							        <p:selectOneMenu id="french" value="#{orderController2.french}">
-			    						<f:selectItems value="#{orderController2.frenchChoices}"/>
-							        </p:selectOneMenu>
-								</h:panelGroup>
- 
-								<h:panelGroup>
-	        						<h:outputLabel for="balloon" value="Balloon:" style="margin-right: 8px"/>
-									<p:selectOneRadio id="balloon" value="#{orderController2.balloon}" style="display: inline-table;">
-			    						<f:selectItems value="#{orderController2.balloonChoices}"/>
-									</p:selectOneRadio>
-								</h:panelGroup>
-
-								<h:outputText value="&#160;" />
-
-							    <p:panelGrid style="border: 2px solid #ffffff">
-									<f:facet name="header">
-										<p:row>
-											<p:column colspan="2">Accessories</p:column>
-										</p:row>
-									</f:facet>
-							    	<p:row style="background-color: #afc4d6">
-					                    <p:column><h:outputLabel for="trays" value="Indwelling Catheter Insertion Tray"/></p:column>
-      									<p:column><p:spinner id="trays" value="#{orderController2.trayQty}" size="2" min="0" max="10" /></p:column>
-							    	</p:row>
-							    	<p:row style="background-color: #afc4d6">
-					                    <p:column><h:outputLabel for="syringes" value="Irrigation Syringes"/></p:column>
-      									<p:column><p:spinner id="syringes" value="#{orderController2.syringeQty}" size="2" min="0" max="10" /></p:column>
-							    	</p:row>
-							    	<p:row style="background-color: #afc4d6">
-					                    <p:column><h:outputLabel for="solutions" value="Irrigation Solution"/></p:column>
-      									<p:column>
-      										<p:spinner id="solutions" value="#{orderController2.solutionQty}" size="2" min="0" max="10" />
-											<p:selectOneRadio value="#{orderController2.solutionType}" style="margin-left: auto">
-					            				<f:selectItem itemLabel="saline" itemValue="1" />
-					            				<f:selectItem itemLabel="sterile" itemValue="2" />
-											</p:selectOneRadio>
-      									</p:column>
-							    	</p:row>
-							    	<p:row style="background-color: #afc4d6">
-					                    <p:column><h:outputLabel for="bags" value="Urine Collection Bag" /></p:column>
-      									<p:column>
-      										<p:spinner id="bags" value="#{orderController2.bagQty}" size="2" min="0" max="10" />
-											<p:selectOneRadio value="#{orderController2.bagType}" style="margin-left: auto">
-					            				<f:selectItem itemLabel="leg" itemValue="1" />
-					            				<f:selectItem itemLabel="abdominal" itemValue="2" />
-											</p:selectOneRadio>
-      									</p:column>
-							    	</p:row>
-							    	<p:row style="background-color: #afc4d6">
-					                    <p:column><h:outputLabel for="bedsideBags" value="Bedside Urine Collection Bag" /></p:column>
-      									<p:column><p:spinner id="bedsideBags" value="#{orderController2.bedsideBagQty}" size="2" min="0" max="10" /></p:column>
-							    	</p:row>
-							    </p:panelGrid>
-
-								<h:outputText value="&#160;" />
-
-							    <p:panel id="necessitiesPanel" header="Medical Necessities" style="border: 2px solid #ffffff; background-color: #afc4d6">
-									<h:outputLabel value="#{orderController2.medicalNecessities}"/>
-							    </p:panel>
-							    
-								<h:outputText value="&#160;" />
-
+								<ui:include src="/WEB-INF/ProcessFlow1.xhtml" />
 						    </h:panelGrid>
 
 						    <h:panelGroup rendered="#{orderController2.displayPanel(2)}">
-								<h:outputLabel value="[To be done (1)]"/>
+								<h:outputLabel value="[Process Flow 2]"/>
 						    </h:panelGroup>
 						    <h:panelGroup rendered="#{orderController2.displayPanel(3)}">
-								<h:outputLabel value="[To be done (2)]>"/>
+								<h:outputLabel value="[Process Flow 3]>"/>
 						    </h:panelGroup>
 						</h:panelGroup>
 
@@ -137,79 +66,6 @@
 					</p:column>
 				</p:row>
 
-				<h:outputScript>
-
-				//<![CDATA[
-	
-					function postProcessExpand(sender, tree) {
-						var node = getNode(sender, tree, "expandNode")
-						// console.log(name(node) + " Expand Postprocessing: selected = " + isSelected(node) + ", expanded = " + isExpandeded(node));
-	
-						select(node);
-						collapseSiblings(node)
-	
-						console.log("Postprocessing Complete");
-					}
-		
-					function postProcessSelect(sender, tree) {
-						var node = getNode(sender, tree, "selection");
-						// console.log(name(node) + " Select Postprocessing: selected = " + isSelected(node) + ", expanded = " + isExpandeded(node));
-	
-						expand(node);
-						collapseSiblings(node);
-	
-						console.log("Postprocessing Complete");
-					}
-		
-					function collapseSiblings(node) {
-						var siblings = node.parent().parent().parent().siblings();
-						siblings.find(".ui-icon-minus").trigger("click");
-					}			
-					
-					function getNode(sender, tree, eventName) {
-						var textToSearch = decodeURIComponent(sender.data);
-						var target = sender.source + "_" + eventName;
-						var results = new RegExp('[\?&]' + target + '=([^&#]*)').exec(textToSearch);
-					    if (results === null) return null;
-		
-					    var dataRowKey = results[1] || 0;
-					    var selector = "td[data-rowkey='" + dataRowKey + "']";
-					    return $(tree.jq).find(selector);
-					}			
-	
-					function isSelected(node) {
-						return node[0].classList.contains("ui-treenode-selected")
-					}
-	
-					function select(node) {
-						//if (!isSelected(node)) {
-					    	node.find(".ui-tree-selectable").trigger("click");
-						//}
-					}
-	
-					function isExpandeded(node) {
-						return !node[0].classList.contains("ui-treenode-collapsed")
-					}
-	
-					function expand(node) {
-						//if (!isExpandeded(node)) {
-					    	node.find(".ui-icon-plus").trigger("click");
-						//}
-					}
-	
-					function name(node) {
-						return node[0].innerText;
-					}
-	
-					function quantityWarning(sender, dialog) {
-						var quantity = parseInt(sender.value);
-						console.log("Quantity = " + quantity);
-						if (quantity > 1) { dialog.show(); }
-					}
-
-				//]]>
-
-				</h:outputScript>
 			</p:panelGrid>
     	</h:form>
 
