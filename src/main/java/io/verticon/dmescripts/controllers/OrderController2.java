@@ -38,7 +38,7 @@ public class OrderController2 implements Serializable {
     private String orderStatus;
 
     public void orderItem() {
-    	orderStatus = String.format("   Order Placed %s", new Date());
+    	orderStatus = String.format("Order Successfully Placed %s", new Date());
     }
 
     public String getOrderStatus() {
@@ -101,9 +101,16 @@ public class OrderController2 implements Serializable {
 
     private String selectedHcpc;
     private int quantity;
-
-    private int french;
     private int balloon;
+    private List<Integer> balloonChoices = new ArrayList<Integer>() {
+    	private static final long serialVersionUID = 1L;
+    	{ add(5); add(10); add(30); }
+    };
+    private int french;
+    private List<Integer> frenchChoices = new ArrayList<Integer>() {
+    	private static final long serialVersionUID = 1L;
+    	{ add(6); add(8); add(10); add(12); add(14); add(16); add(18); add(20); add(22); add(24); add(26); add(28); }
+    };
  
     private int solutionType; // 1 = saline, 2 = sterile
     private int bagType; // 1 = leg, 2 = abdominal
@@ -114,10 +121,6 @@ public class OrderController2 implements Serializable {
     private int bagQty;
     private int bedsideBagQty;
 
-    private List<Integer> balloonChoices = new ArrayList<Integer>() {
-    	private static final long serialVersionUID = 1L;
-    	{ add(5); add(10); add(30); }
-    };
     private List<String> accessories;
 
     private void initProducts() {
@@ -184,6 +187,8 @@ public class OrderController2 implements Serializable {
 
     public void setQuantity(int quantity) { this.quantity = quantity; }
 
+    public List<Integer> getFrenchChoices() { return frenchChoices; }
+
     public int getFrench() { return french; }
 
     public void setFrench(int french) { this.french = french; }
@@ -222,16 +227,9 @@ public class OrderController2 implements Serializable {
 
     public void setSolutionQty(int qty) { this.solutionQty = qty; }
 
-    public List<String> getSelectedAccessories() {
-    	return accessories;
-    }
+    public List<String> getSelectedAccessories() { return accessories; }
 
-    public void setSelectedAccessories(List<String> accessories) {
-    	this.accessories = accessories;
-    }
-
-    public void saveFovorite() {
-    }
+    public void setSelectedAccessories(List<String> accessories) { this.accessories = accessories; }
 
     public boolean displayPanel(int panelId) {
 	   if (selectedHcpc == null) return false;
