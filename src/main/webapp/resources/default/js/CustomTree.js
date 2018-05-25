@@ -62,8 +62,8 @@ function name(node) {
 	return node[0].innerText;
 }
 
-function quantityWarning(sender, dialog) {
+function validateQuantity(sender, dialog, max) {
 	var quantity = parseInt(sender.value);
 	console.log("Quantity = " + quantity);
-	if (quantity > 1) { dialog.show(); }
+	if (quantity > max) { dialog.show(); }
 }

@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:panelGroup>
+		<h:outputLabel for="quantity2" value="Quantity (per month):" style="margin-right: 8px"/>
+		<p:spinner id="quantity2" value="#{orderController2.quantity}" size="2" min="1" max="50" onchange="validateQuantity(this, PF('allowableQuantityDialog2'), 35)"/>
+	    <p:dialog widgetVar="allowableQuantityDialog2" header="Warning" showEffect="fold" hideEffect="fold">
+			<h:outputText value="Medicare requires a medical justification for quantities greater than 35. Approval is not guaranteed." />
+		</p:dialog>
+	</h:panelGroup>
+
+	<h:panelGroup>
+		<h:outputLabel for="provideSize" value="Provide Size (if no then DME will size)?" style="margin-right: 8px"/>
+        <p:selectBooleanButton id="provideSize" value="#{orderController2.sizeProvided}" onLabel="Yes" offLabel="No" style="margin-right: 8px">
+        	<p:ajax update="orderProduct:details"/>
+        </p:selectBooleanButton>
+		<h:outputLabel for="diameterMenu" value="Diameter (mm):" rendered="#{orderController2.sizeProvided}" style="margin-right: 8px"/>
+		<p:selectOneMenu id="diameterMenu" value="#{orderController2.diameter}" rendered="#{orderController2.sizeProvided}">
+ 			<f:selectItems value="#{orderController2.diameterChoices}"/>
+		</p:selectOneMenu>
+	</h:panelGroup>
+
+	<h:panelGroup>
+		<h:outputLabel for="hasLatexAllergy" value="Does the patient have a latex allergy?" style="margin-right: 8px"/>
+        <p:selectBooleanButton id="hasLatexAllergy" value="#{orderController2.hasLatexAllergy}" onLabel="Yes" offLabel="No" style="margin-right: 8px"/>
+	</h:panelGroup>
+
+	<h:outputText value="&#160;" />
+
+	<p:panelGrid style="border: 2px solid #ffffff">
+		<f:facet name="header">
+			<p:row>
+				<p:column colspan="2">Accessories</p:column>
+			</p:row>
+		</f:facet>
+
+	    <p:row style="background-color: #afc4d6">
+			<p:column><h:outputLabel value="Extension Drain Tubing"/></p:column>
+			<p:column><p:spinner value="#{orderController2.tubingQty}" size="2" min="0" max="10" /></p:column>
+	    </p:row>
+
+	    <p:row style="background-color: #afc4d6">
+			<p:column><h:outputLabel value="Adhesive Remover Wipes"/></p:column>
+			<p:column><p:spinner value="#{orderController2.wipesQty}" size="2" min="0" max="10" /></p:column>
+	    </p:row>
+
+	    <p:row style="background-color: #afc4d6">
+			<p:column><h:outputLabel value="Urine Collection Bag" /></p:column>
+			<p:column>
+				<p:spinner value="#{orderController2.bagQty}" size="2" min="0" max="10" />
+				<p:selectOneRadio value="#{orderController2.bagType}" style="margin-left: auto">
+           			<f:selectItem itemLabel="leg" itemValue="1" />
+           			<f:selectItem itemLabel="abdominal" itemValue="2" />
+				</p:selectOneRadio>
+			</p:column>
+	    </p:row>
+
+	    <p:row style="background-color: #afc4d6">
+			<p:column><h:outputLabel value="Bedside Urine Collection Bag" /></p:column>
+			<p:column><p:spinner value="#{orderController2.bedsideBagQty}" size="2" min="0" max="10" /></p:column>
+	    </p:row>
+	</p:panelGrid>
+
+</ui:composition>

@@ -44,12 +44,13 @@
 								<ui:include src="/WEB-INF/ProcessFlow1.xhtml" />
 						    </h:panelGrid>
 
-						    <h:panelGroup rendered="#{orderController2.displayPanel(2)}">
-								<h:outputLabel value="[Process Flow 2]"/>
-						    </h:panelGroup>
-						    <h:panelGroup rendered="#{orderController2.displayPanel(3)}">
-								<h:outputLabel value="[Process Flow 3]>"/>
-						    </h:panelGroup>
+						    <h:panelGrid columns="1" rendered="#{orderController2.displayPanel(2)}" style="background-color: #9fd1ff;">
+								<ui:include src="/WEB-INF/ProcessFlow2.xhtml" />
+						    </h:panelGrid>
+
+						    <h:panelGrid columns="1" rendered="#{orderController2.displayPanel(3)}" style="background-color: #9fd1ff;">
+								<ui:include src="/WEB-INF/ProcessFlow3.xhtml" />
+						    </h:panelGrid>
 						</h:panelGroup>
 
 					</p:column>

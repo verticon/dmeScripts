@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:panelGroup>
+		<h:outputLabel for="quantity3" value="Quantity (per month):" style="margin-right: 8px"/>
+		<p:spinner id="quantity3" value="#{orderController2.quantity}" size="2" min="1" max="10" onchange="validateQuantity(this, PF('allowableQuantityDialog3'), 1)"/>
+	    <p:dialog widgetVar="allowableQuantityDialog3" header="Warning" showEffect="fold" hideEffect="fold">
+			<h:outputText value="Medicare requires a medical justification for quantities greater than 1. Approval is not guaranteed." />
+		</p:dialog>
+	</h:panelGroup>
+
+	<h:panelGroup>
+		<h:outputLabel for="french3" value="French:" style="margin-right: 8px"/>
+		<p:selectOneMenu id="french3" value="#{orderController2.french}">
+ 			<f:selectItems value="#{orderController2.frenchChoicesIntermittant}"/>
+		</p:selectOneMenu>
+	</h:panelGroup>
+
+	<h:panelGroup>
+   		<h:outputLabel for="length" value="Length:" style="margin-right: 8px"/>
+		<p:selectOneRadio id="length" value="#{orderController2.length}" style="display: inline-table;">
+ 			<f:selectItems value="#{orderController2.lengthChoices}"/>
+		</p:selectOneRadio>
+	</h:panelGroup>
+
+	<h:panelGroup>
+		<h:outputLabel for="closedSysteme" value="Add Closed System Option (Sterile Technique)?" style="margin-right: 8px"/>
+        <p:selectBooleanButton id="closedSysteme" value="#{orderController2.closedSystemOption}" onLabel="Yes" offLabel="No">
+        	<p:ajax update="orderProduct:details"/>
+        </p:selectBooleanButton>
+	</h:panelGroup>
+
+	<h:outputText value="&#160;" />
+
+	<p:panel header="Medical Necessities" style="border: 2px solid #ffffff; background-color: #afc4d6">
+		<h:outputText value="#{orderController2.medicalNecessities}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
+	</p:panel>
+
+</ui:composition>

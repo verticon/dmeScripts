@@ -4,22 +4,22 @@
 <ui:composition 
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"																																																																										
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:p="http://primefaces.org/ui">
 
 	<h:panelGroup>
-		<h:outputLabel for="quantity" value="Quantity (per month):" style="margin-right: 8px"/>
-		<p:spinner id="quantity" value="#{orderController2.quantity}" size="2" min="1" max="10" onchange="quantityWarning(this, PF('allowableQuantityDialog'))"/>
-	    <p:dialog widgetVar="allowableQuantityDialog" header="Warning" showEffect="fold" hideEffect="fold">
+		<h:outputLabel for="quantity1" value="Quantity (per month):" style="margin-right: 8px"/>
+		<p:spinner id="quantity1" value="#{orderController2.quantity}" size="2" min="1" max="10" onchange="validateQuantity(this, PF('allowableQuantityDialog1'), 1)"/>
+	    <p:dialog widgetVar="allowableQuantityDialog1" header="Warning" showEffect="fold" hideEffect="fold">
 			<h:outputText value="Medicare requires a medical justification for quantities greater than 1. Approval is not guaranteed." />
 		</p:dialog>
 	</h:panelGroup>
 
 	<h:panelGroup>
-		<h:outputLabel for="french" value="French:" style="margin-right: 8px"/>
-		<p:selectOneMenu id="french" value="#{orderController2.french}">
- 			<f:selectItems value="#{orderController2.frenchChoices}"/>
+		<h:outputLabel for="french1" value="French:" style="margin-right: 8px"/>
+		<p:selectOneMenu id="french1" value="#{orderController2.french}">
+ 			<f:selectItems value="#{orderController2.frenchChoicesIndwelling}"/>
 		</p:selectOneMenu>
 	</h:panelGroup>
 
@@ -40,19 +40,19 @@
 		</f:facet>
 
 	    <p:row style="background-color: #afc4d6">
-			<p:column><h:outputLabel for="trays" value="Indwelling Catheter Insertion Tray"/></p:column>
-			<p:column><p:spinner id="trays" value="#{orderController2.trayQty}" size="2" min="0" max="10" /></p:column>
+			<p:column><h:outputLabel value="Indwelling Catheter Insertion Tray"/></p:column>
+			<p:column><p:spinner value="#{orderController2.trayQty}" size="2" min="0" max="10" /></p:column>
 	    </p:row>
 
 	    <p:row style="background-color: #afc4d6">
-			<p:column><h:outputLabel for="syringes" value="Irrigation Syringes"/></p:column>
-			<p:column><p:spinner id="syringes" value="#{orderController2.syringeQty}" size="2" min="0" max="10" /></p:column>
+			<p:column><h:outputLabel value="Irrigation Syringes"/></p:column>
+			<p:column><p:spinner value="#{orderController2.syringeQty}" size="2" min="0" max="10" /></p:column>
 	    </p:row>
 
 	    <p:row style="background-color: #afc4d6">
-			<p:column><h:outputLabel for="solutions" value="Irrigation Solution"/></p:column>
+			<p:column><h:outputLabel value="Irrigation Solution"/></p:column>
 			<p:column>
-				<p:spinner id="solutions" value="#{orderController2.solutionQty}" size="2" min="0" max="10" />
+				<p:spinner value="#{orderController2.solutionQty}" size="2" min="0" max="10" />
 				<p:selectOneRadio value="#{orderController2.solutionType}" style="margin-left: auto">
            			<f:selectItem itemLabel="saline" itemValue="1" />
            			<f:selectItem itemLabel="sterile" itemValue="2" />
@@ -61,9 +61,9 @@
 	    </p:row>
 
 	    <p:row style="background-color: #afc4d6">
-			<p:column><h:outputLabel for="bags" value="Urine Collection Bag" /></p:column>
+			<p:column><h:outputLabel value="Urine Collection Bag" /></p:column>
 			<p:column>
-				<p:spinner id="bags" value="#{orderController2.bagQty}" size="2" min="0" max="10" />
+				<p:spinner value="#{orderController2.bagQty}" size="2" min="0" max="10" />
 				<p:selectOneRadio value="#{orderController2.bagType}" style="margin-left: auto">
            			<f:selectItem itemLabel="leg" itemValue="1" />
            			<f:selectItem itemLabel="abdominal" itemValue="2" />
@@ -72,14 +72,14 @@
 	    </p:row>
 
 	    <p:row style="background-color: #afc4d6">
-			<p:column><h:outputLabel for="bedsideBags" value="Bedside Urine Collection Bag" /></p:column>
-			<p:column><p:spinner id="bedsideBags" value="#{orderController2.bedsideBagQty}" size="2" min="0" max="10" /></p:column>
+			<p:column><h:outputLabel value="Bedside Urine Collection Bag" /></p:column>
+			<p:column><p:spinner value="#{orderController2.bedsideBagQty}" size="2" min="0" max="10" /></p:column>
 	    </p:row>
 	</p:panelGrid>
 
 	<h:outputText value="&#160;" />
 
-	<p:panel id="necessitiesPanel" header="Medical Necessities" style="border: 2px solid #ffffff; background-color: #afc4d6">
+	<p:panel header="Medical Necessities" style="border: 2px solid #ffffff; background-color: #afc4d6">
 		<h:outputLabel value="#{orderController2.medicalNecessities}"/>
 	</p:panel>
 
