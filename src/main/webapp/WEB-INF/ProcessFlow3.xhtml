@@ -10,11 +10,10 @@
 
 	<h:panelGroup>
 		<h:outputLabel for="quantity3" value="Quantity (per month):" style="margin-right: 8px"/>
-		<p:spinner id="quantity3" value="#{orderController2.quantity}" size="2" min="1" max="10" onchange="validateQuantity(this, PF('allowableQuantityDialog3'), 1)"/>
-	    <p:dialog widgetVar="allowableQuantityDialog3" header="Warning" showEffect="fold" hideEffect="fold">
-			<h:outputText value="Medicare requires a medical justification for quantities greater than 1. Approval is not guaranteed." />
-		</p:dialog>
+		<p:spinner id="quantity3" value="#{orderController2.quantity}" size="2" min="1" max="10"/>
 	</h:panelGroup>
+
+	<h:outputText value="&#160;" />
 
 	<h:panelGroup>
 		<h:outputLabel for="french3" value="French:" style="margin-right: 8px"/>
@@ -23,12 +22,16 @@
 		</p:selectOneMenu>
 	</h:panelGroup>
 
+	<h:outputText value="&#160;" />
+
 	<h:panelGroup>
    		<h:outputLabel for="length" value="Length:" style="margin-right: 8px"/>
 		<p:selectOneRadio id="length" value="#{orderController2.length}" style="display: inline-table;">
  			<f:selectItems value="#{orderController2.lengthChoices}"/>
 		</p:selectOneRadio>
 	</h:panelGroup>
+
+	<h:outputText value="&#160;" />
 
 	<h:panelGroup>
 		<h:outputLabel for="closedSysteme" value="Add Closed System Option (Sterile Technique)?" style="margin-right: 8px"/>

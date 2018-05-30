@@ -10,13 +10,12 @@
 
 	<h:panelGroup>
 		<h:outputLabel for="quantity2" value="Quantity (per month):" style="margin-right: 8px"/>
-		<p:spinner id="quantity2" value="#{orderController2.quantity}" size="2" min="1" max="50" onchange="validateQuantity(this, PF('allowableQuantityDialog2'), 35)"/>
-	    <p:dialog widgetVar="allowableQuantityDialog2" header="Warning" showEffect="fold" hideEffect="fold">
-			<h:outputText value="Medicare requires a medical justification for quantities greater than 35. Approval is not guaranteed." />
-		</p:dialog>
+		<p:spinner id="quantity2" value="#{orderController2.quantity}" size="2" min="1" max="50"/>
 	</h:panelGroup>
 
-	<h:panelGroup>
+	<h:outputText value="&#160;" />
+
+	<h:panelGrid columns="2">
 		<h:outputLabel for="provideSize" value="Provide Size (if no then DME will size)?" style="margin-right: 8px"/>
         <p:selectBooleanButton id="provideSize" value="#{orderController2.sizeProvided}" onLabel="Yes" offLabel="No" style="margin-right: 8px">
         	<p:ajax update="orderProduct:details"/>
@@ -25,7 +24,9 @@
 		<p:selectOneMenu id="diameterMenu" value="#{orderController2.diameter}" rendered="#{orderController2.sizeProvided}">
  			<f:selectItems value="#{orderController2.diameterChoices}"/>
 		</p:selectOneMenu>
-	</h:panelGroup>
+	</h:panelGrid>
+
+	<h:outputText value="&#160;" />
 
 	<h:panelGroup>
 		<h:outputLabel for="hasLatexAllergy" value="Does the patient have a latex allergy?" style="margin-right: 8px"/>

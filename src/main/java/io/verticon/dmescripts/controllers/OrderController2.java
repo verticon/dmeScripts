@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
@@ -45,14 +46,51 @@ public class OrderController2 implements Serializable {
 
     // ********************************* Add New Order ***************************************
 
-    private String orderStatus;
+    private String orderReceipt;
+    private static int orderId = 0;
+    private String quantityWarning;
 
-    public void orderItem() {
-    	orderStatus = String.format("Order Successfully Placed, %s", new Date());
+    public void placeOrder(boolean validateQuantity) {
+    	int limit = getLimit(selectedHcpc);
+    	boolean isValid = validateQuantity ? quantity <= limit : true;
+
+    	if(isValid) {
+    		orderReceipt = String.format("Order %d Successfully Placed, %s", ++orderId, new Date());
+    		RequestContext.getCurrentInstance().execute("PF('orderReceiptDialog').show();");
+    	}
+    	else {
+    		quantityWarning = String.format("Medicare requires a medical justification<br/>"
+    									+   "for quantities greater than %d. Approval is<br/>"
+    									+   "not guaranteed. Place order anyway?<br/><br/>", limit);
+    		RequestContext.getCurrentInstance().execute("PF('confirmQuantityDialog').show();");
+    	}
     }
 
-    public String getOrderStatus() {
-    	return orderStatus;
+    public int getLimit(String hcpc) {
+    	switch (hcpc) {
+		case "A4338":
+		case "A4340":
+		case "A4344":
+			return 1;
+
+		case "A4349":
+			return 35;
+
+		case "A4351":
+		case "A4352":
+			return 1;
+
+		default:
+			return 1;
+    	}
+    }
+
+    public String getOrderReceipt() {
+    	return orderReceipt;
+    }
+
+    public String getQuantityWarning() {
+    	return quantityWarning;
     }
 
     // ********************************* The Orders Table ***************************************
@@ -183,8 +221,6 @@ public class OrderController2 implements Serializable {
     public void onNodeExpanded(NodeExpandEvent event) {
     	//TreeNode expandedNode = event.getTreeNode();
     	// System.out.printf("\nExpanded %s\n", expandedNode);
-    
-    	orderStatus = null;
     }
 
     public void onNodeCollapsed(NodeCollapseEvent event) {
@@ -223,9 +259,6 @@ public class OrderController2 implements Serializable {
         	closedSystemOption = false;
         }
     	else { selectedHcpc = null; }
-
-
-    	orderStatus = null;
     }
 
 

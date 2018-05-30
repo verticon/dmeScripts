@@ -10,11 +10,10 @@
 
 	<h:panelGroup>
 		<h:outputLabel for="quantity1" value="Quantity (per month):" style="margin-right: 8px"/>
-		<p:spinner id="quantity1" value="#{orderController2.quantity}" size="2" min="1" max="10" onchange="validateQuantity(this, PF('allowableQuantityDialog1'), 1)"/>
-	    <p:dialog widgetVar="allowableQuantityDialog1" header="Warning" showEffect="fold" hideEffect="fold">
-			<h:outputText value="Medicare requires a medical justification for quantities greater than 1. Approval is not guaranteed." />
-		</p:dialog>
+		<p:spinner id="quantity1" value="#{orderController2.quantity}" size="2" min="1" max="10"/>
 	</h:panelGroup>
+
+	<h:outputText value="&#160;" />
 
 	<h:panelGroup>
 		<h:outputLabel for="french1" value="French:" style="margin-right: 8px"/>
@@ -22,6 +21,8 @@
  			<f:selectItems value="#{orderController2.frenchChoicesIndwelling}"/>
 		</p:selectOneMenu>
 	</h:panelGroup>
+
+	<h:outputText value="&#160;" />
 
 	<h:panelGroup>
    		<h:outputLabel for="balloon" value="Balloon:" style="margin-right: 8px"/>
@@ -80,7 +81,7 @@
 	<h:outputText value="&#160;" />
 
 	<p:panel header="Medical Necessities" style="border: 2px solid #ffffff; background-color: #afc4d6">
-		<h:outputLabel value="#{orderController2.medicalNecessities}"/>
+		<h:outputText value="#{orderController2.medicalNecessities}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
 	</p:panel>
 
 </ui:composition>

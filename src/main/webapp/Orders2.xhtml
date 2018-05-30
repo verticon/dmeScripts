@@ -59,9 +59,16 @@
 				<p:row style="background-color: #afc4d6">
 					<p:column colspan="2" style="text-align: center">
 						<h:panelGroup id="orderButton">
-	        	    		<p:commandButton value="Place Order" actionListener="#{orderController2.orderItem}" rendered="#{orderController2.selectedProduct != null}" update="orderStatus" oncomplete="PF('orderStatusDialog').show()"/>
-						    <p:dialog id="orderStatus" widgetVar="orderStatusDialog" header="Order Status" showEffect="fold" hideEffect="fold">
-						    	<h:outputText value="#{orderController2.orderStatus}"  />
+	        	    		<p:commandButton value="Place Order" actionListener="#{orderController2.placeOrder(true)}" rendered="#{orderController2.selectedProduct != null}" update="confirmQuantity orderReceipt" />
+
+						    <p:dialog id="confirmQuantity" widgetVar="confirmQuantityDialog" header="Confirm Quantity" showEffect="fold" hideEffect="fold">
+								<h:outputText value="#{orderController2.quantityWarning}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
+		        	    		<p:commandButton value="Yes" actionListener="#{orderController2.placeOrder(false)}" update="orderReceipt" oncomplete="PF('confirmQuantityDialog').hide()"/>
+		        	    		<p:commandButton value="No" oncomplete="PF('confirmQuantityDialog').hide()"/>
+						    </p:dialog>
+
+						    <p:dialog id="orderReceipt" widgetVar="orderReceiptDialog" header="Order Receipt" showEffect="fold" hideEffect="fold">
+						    	<h:outputText value="#{orderController2.orderReceipt}"  />
 						    </p:dialog>
 						</h:panelGroup>
 					</p:column>
