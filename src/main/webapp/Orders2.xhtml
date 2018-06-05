@@ -20,6 +20,13 @@
 			
     	<h:form id="orderProduct" styleClass="demo">
 
+			<h:outputLabel for="patients" value="Patient:" style="margin-right: 8px"></h:outputLabel>
+			<h:selectOneMenu for="patients" value="#{orderController2.patientId}" style="margin-right: 8px">
+				<f:selectItems value="#{orderController2.patients}" var="patient" itemValue="#{patient.id}" itemLabel="#{patient.fullName}" />
+				<f:ajax listener="#{orderController2.patientSelectionChanged}" />
+			</h:selectOneMenu>
+			<h:commandButton value="Manage" action="Patients" styleClass="demo"/>
+
 			<p:panelGrid id="orderGrid" >
 				<p:row style="background-color: #afc4d6;">
 					<p:column>

@@ -140,7 +140,7 @@ public class OrderController2 implements Serializable {
     }
 
     public void patientSelectionChanged() {
-        // System.out.printf("Selected patient changed to %s\n", patient.getFullName());
+        //System.out.printf("Selected patient changed to %s\n", patient.getFullName());
     }
 
 	/************************ The Product Tree **********************************/

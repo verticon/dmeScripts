@@ -16,4 +16,17 @@
 	 <welcome-file-list>
 	    <welcome-file>index.xhtml</welcome-file>
 	 </welcome-file-list>
- </web-app>
+
+	<session-config>
+		<session-timeout>1</session-timeout>
+	</session-config>
+
+	<error-page>
+		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
+		<location>/WEB-INF/errorpages/expired.xhtml</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/WEB-INF/errorpages/catchall.xhtml</location>
+	</error-page>
+</web-app>
