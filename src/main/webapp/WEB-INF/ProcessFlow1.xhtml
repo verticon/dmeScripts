@@ -10,15 +10,15 @@
 
 	<h:panelGroup>
 		<h:outputLabel for="quantity1" value="Quantity (per month):" style="margin-right: 8px"/>
-		<p:spinner id="quantity1" value="#{orderController2.quantity}" size="2" min="1" max="10"/>
+		<p:spinner id="quantity1" value="#{orderController.quantity}" size="2" min="1" max="10"/>
 	</h:panelGroup>
 
 	<h:outputText value="&#160;" />
 
 	<h:panelGroup>
 		<h:outputLabel for="french1" value="French:" style="margin-right: 8px"/>
-		<p:selectOneMenu id="french1" value="#{orderController2.french}">
- 			<f:selectItems value="#{orderController2.frenchChoicesIndwelling}"/>
+		<p:selectOneMenu id="french1" value="#{orderController.french}">
+ 			<f:selectItems value="#{orderController.frenchChoicesIndwelling}"/>
 		</p:selectOneMenu>
 	</h:panelGroup>
 
@@ -26,8 +26,8 @@
 
 	<h:panelGroup>
    		<h:outputLabel for="balloon" value="Balloon:" style="margin-right: 8px"/>
-		<p:selectOneRadio id="balloon" value="#{orderController2.balloon}" style="display: inline-table;">
- 			<f:selectItems value="#{orderController2.balloonChoices}"/>
+		<p:selectOneRadio id="balloon" value="#{orderController.balloon}" style="display: inline-table;">
+ 			<f:selectItems value="#{orderController.balloonChoices}"/>
 		</p:selectOneRadio>
 	</h:panelGroup>
 
@@ -42,19 +42,19 @@
 
 	    <p:row style="background-color: #afc4d6">
 			<p:column><h:outputLabel value="Indwelling Catheter Insertion Tray"/></p:column>
-			<p:column><p:spinner value="#{orderController2.trayQty}" size="2" min="0" max="10" /></p:column>
+			<p:column><p:spinner value="#{orderController.trayQty}" size="2" min="0" max="10" /></p:column>
 	    </p:row>
 
 	    <p:row style="background-color: #afc4d6">
 			<p:column><h:outputLabel value="Irrigation Syringes"/></p:column>
-			<p:column><p:spinner value="#{orderController2.syringeQty}" size="2" min="0" max="10" /></p:column>
+			<p:column><p:spinner value="#{orderController.syringeQty}" size="2" min="0" max="10" /></p:column>
 	    </p:row>
 
 	    <p:row style="background-color: #afc4d6">
 			<p:column><h:outputLabel value="Irrigation Solution"/></p:column>
 			<p:column>
-				<p:spinner value="#{orderController2.solutionQty}" size="2" min="0" max="10" />
-				<p:selectOneRadio value="#{orderController2.solutionType}" style="margin-left: auto">
+				<p:spinner value="#{orderController.solutionQty}" size="2" min="0" max="10" />
+				<p:selectOneRadio value="#{orderController.solutionType}" style="margin-left: auto">
            			<f:selectItem itemLabel="saline" itemValue="1" />
            			<f:selectItem itemLabel="sterile" itemValue="2" />
 				</p:selectOneRadio>
@@ -64,8 +64,8 @@
 	    <p:row style="background-color: #afc4d6">
 			<p:column><h:outputLabel value="Urine Collection Bag" /></p:column>
 			<p:column>
-				<p:spinner value="#{orderController2.bagQty}" size="2" min="0" max="10" />
-				<p:selectOneRadio value="#{orderController2.bagType}" style="margin-left: auto">
+				<p:spinner value="#{orderController.bagQty}" size="2" min="0" max="10" />
+				<p:selectOneRadio value="#{orderController.bagType}" style="margin-left: auto">
            			<f:selectItem itemLabel="leg" itemValue="1" />
            			<f:selectItem itemLabel="abdominal" itemValue="2" />
 				</p:selectOneRadio>
@@ -74,14 +74,14 @@
 
 	    <p:row style="background-color: #afc4d6">
 			<p:column><h:outputLabel value="Bedside Urine Collection Bag" /></p:column>
-			<p:column><p:spinner value="#{orderController2.bedsideBagQty}" size="2" min="0" max="10" /></p:column>
+			<p:column><p:spinner value="#{orderController.bedsideBagQty}" size="2" min="0" max="10" /></p:column>
 	    </p:row>
 	</p:panelGrid>
 
 	<h:outputText value="&#160;" />
 
 	<p:panel header="Medical Necessities" style="border: 2px solid #ffffff; background-color: #afc4d6">
-		<h:outputText value="#{orderController2.medicalNecessities}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
+		<h:outputText value="#{orderController.medicalNecessities}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
 	</p:panel>
 
 </ui:composition>
