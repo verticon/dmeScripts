@@ -1,14 +1,10 @@
 package io.verticon.dmescripts.model;
 
-import java.util.List;
-import java.util.Calendar;
 import java.util.Date;
 
-import javax.persistence.*;
+import org.hl7.fhir.dstu3.model.DateType;
+import org.hl7.fhir.dstu3.model.Enumerations;
 
-@Entity
-@Table(name="Patients")
-//@EntityListeners(PatientListener.class)
 public class Patient {
 
 	public enum Gender {
@@ -19,90 +15,45 @@ public class Patient {
 		}
 	}
 
-	private static Long idCounter = 1L;
+	public static final String system = "http://dmw.levy.com/mrn";
 
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private org.hl7.fhir.dstu3.model.Patient patient;
 
-    private String firstName;
-    private String lastName;
-    private String insurance;
+    public Patient(org.hl7.fhir.dstu3.model.Patient patient) { this.patient = patient; }
 
-	@OneToMany(mappedBy = "patient")
-	private List<Order> orders;
+	public Patient(String firstName, String lastName, Gender gender, Date birthDate) {
+		patient = new org.hl7.fhir.dstu3.model.Patient();
 
-	@Temporal(TemporalType.DATE)
-	private Date birthDate;
-
-    @Enumerated(EnumType.ORDINAL)
-    private Gender gender = Gender.MALE;
-
-    public Patient() {}
-
-	public Patient(String firstName, String lastName, Gender gender, Date birthDate, String insurance) {
-		id = idCounter++;
-		setFirstName(firstName);
-		setLastName(lastName);
-		setGender(gender);
-		setBirthDate(birthDate);
-		setInsurance(insurance);
+		patient.addName().setFamily(lastName).addGiven(firstName);
+		patient.addIdentifier().setSystem(system).setValue("12345");
+		patient.setGender(gender == Gender.MALE ? Enumerations.AdministrativeGender.MALE : Enumerations.AdministrativeGender.FEMALE);
+		patient.setBirthDateElement(new DateType(birthDate));
 	}
+
+	public org.hl7.fhir.dstu3.model.Patient getFhirPatient() { return patient; }
 	
-    public Long getId() {
-    	return id;
+    public String getId() {
+    	return patient.getIdElement().getIdPart();
     }
     
     public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        return patient.getName().get(0).getGivenAsSingleString();
     }
 
     public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+        return patient.getName().get(0).getFamily();
     }
 
     public String getFullName() {
-        return String.format("%s %s", firstName, lastName);
+        return patient.getName().get(0).getNameAsSingleString();
     }
 
     public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-    	this.birthDate = adjust(birthDate);
+        return patient.getBirthDate();
     }
 
     public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public String getInsurance() {
-        return insurance;
-    }
-
-    public void setInsurance(String insurance) {
-        this.insurance = insurance;
-    }
-
-    public List<Order> getOrders() {
-    	return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-    	this.orders = orders;
+        return patient.getGender() == Enumerations.AdministrativeGender.MALE ? Gender.MALE : Gender.FEMALE;
     }
 
     @Override
@@ -119,24 +70,6 @@ public class Patient {
 
     @Override
     public String toString() {
-        return String.format("%s: FirstName=%s LastName=%s Insurance=%s", Patient.class.getSimpleName(), firstName, lastName, insurance);
-    }
-
-    private Date adjust(Date birthDate) { // Comes in as midnight, i.e. 00:00:00 dd/mm/yyyy
-    	Calendar calendar = Calendar.getInstance();
-    	calendar.setTime(birthDate);
-    	calendar.add(Calendar.HOUR_OF_DAY, 12); // Move it to noon, i.e. 12:00:00 dd/mm/yyyy
-    	Date adjustedDate = calendar.getTime();
-
-    	/*
-    	SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
-    	System.out.printf("\nOriginal Birthday (%s) = %s\n", formatter.getTimeZone().getDisplayName(),  formatter.format(birthDate));
-    	System.out.printf("Adjusted Birthday (%s) = %s\n", formatter.getTimeZone().getDisplayName(),  formatter.format(adjustedDate));
-    	formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-    	System.out.printf("Original Birthday (%s) = %s\n", formatter.getTimeZone().getDisplayName(),  formatter.format(birthDate));
-    	System.out.printf("Adjusted Birthday (%s) = %s\n", formatter.getTimeZone().getDisplayName(),  formatter.format(adjustedDate));
-    	*/
-    	
-    	return adjustedDate;
+        return String.format("%s: %s", Patient.class.getSimpleName(), getFullName());
     }
 }

@@ -1,75 +1,72 @@
 package io.verticon.dmescripts.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.HumanName;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.ResourceType;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.gclient.ICriterion;
+import ca.uhn.fhir.rest.gclient.TokenClientParam;
 import io.verticon.dmescripts.Factory;
 
 public class DefaultDataAccessService implements DataAccessService {
 
 	// ************************** Patients ********************************
 
-	@Override
-	public List<Patient> getPatients() {
-        EntityManager manager = Factory.emf.createEntityManager();
-        TypedQuery<Patient> query = manager.createQuery("select t from Patient t", Patient.class);
-        List<Patient> patients = query.getResultList();
-        manager.close();
- 		return patients;
-	}
+	private String fhirServerUrl = "http://fhirtest.uhn.ca/baseDstu3";
+	private FhirContext ctx = FhirContext.forDstu3();
+	private IGenericClient client = ctx.newRestfulGenericClient(fhirServerUrl);
+	private IParser parser = ctx.newXmlParser().setPrettyPrint(true);
 
 	@Override
+	public List<Patient> getPatients() {
+		List<Patient> patients = new ArrayList<Patient>();
+
+		try {
+			ICriterion<TokenClientParam> criterion = org.hl7.fhir.dstu3.model.Patient.IDENTIFIER.hasSystemWithAnyCode(Patient.system);
+			Bundle bundle = client.search().forResource(org.hl7.fhir.dstu3.model.Patient.class).where(criterion).returnBundle(Bundle.class).execute();
+
+			for (BundleEntryComponent entry : bundle.getEntry()) {
+				if (entry.getResource().getResourceType() == ResourceType.Patient) {
+					org.hl7.fhir.dstu3.model.Patient fhirPatient = (org.hl7.fhir.dstu3.model.Patient) entry.getResource();
+					Patient patient = new Patient(fhirPatient);
+					patients.add(patient);
+					System.out.printf("\nRetrieved patient %s\n%s\n", patient.getFullName(), parser.encodeResourceToString(fhirPatient));
+				}
+			}
+		}
+		catch(Exception e) {
+			System.out.printf("Cannot find patients for %s\n%s\n", Patient.system, e.getMessage());
+		}
+
+		return patients;
+	}
+	
+	@Override
 	public void addPatient(Patient patient) {
-        EntityManager manager = Factory.emf.createEntityManager();
-        EntityTransaction transaction = manager.getTransaction();
-        transaction.begin();
-        manager.persist(patient);
-        transaction.commit();
-        manager.close();
+		org.hl7.fhir.dstu3.model.Patient fhirPatient = patient.getFhirPatient();
+		MethodOutcome outcome = client.create().resource(fhirPatient).execute();
+		System.out.printf("\nAdded %s (patient id = %s)\n%s\n", patient.getFullName(), outcome.getId().getIdPart(), parser.encodeResourceToString(fhirPatient));
 	}
 
 	@Override
 	public void removePatient(Patient patient) {
-        EntityManager manager = Factory.emf.createEntityManager();
-        EntityTransaction transaction = manager.getTransaction();
-        transaction.begin();
-        manager.remove(manager.getReference(Patient.class, patient.getId()));
-        transaction.commit();
-        manager.close();
-	}
-
-	// ************************** Products ********************************
-
-	@Override
-	public List<Product> getProducts() {
-        EntityManager manager = Factory.emf.createEntityManager();
-        TypedQuery<Product> query = manager.createQuery("select t from Product t", Product.class);
-        List<Product> products = query.getResultList();
-        manager.close();
- 		return products;
-	}
-
-	@Override
-	public void addProduct(Product product) {
-        EntityManager manager = Factory.emf.createEntityManager();
-        EntityTransaction transaction = manager.getTransaction();
-        transaction.begin();
-        manager.persist(product);
-        transaction.commit();
-        manager.close();
-	}
-
-	@Override
-	public void removeProduct(Product product) {
-        EntityManager manager = Factory.emf.createEntityManager();
-        EntityTransaction transaction = manager.getTransaction();
-        transaction.begin();
-        manager.remove(manager.getReference(Product.class, product.getId()));
-        transaction.commit();
-        manager.close();
+		org.hl7.fhir.dstu3.model.Patient fhirPatient = patient.getFhirPatient();
+		OperationOutcome outcome = (OperationOutcome) client.delete().resourceById(new IdDt("Patient", patient.getId())).execute();
+		System.out.printf("\nRemoved %s (patient id = %s)\n%s\n", patient.getFullName(), outcome.getId(), parser.encodeResourceToString(fhirPatient));
 	}
 
 	// ************************** Orders ********************************
@@ -84,14 +81,10 @@ public class DefaultDataAccessService implements DataAccessService {
 	}
 
 	@Override
-	public void addOrder(Order order, Patient patient, Product product) {
+	public void addOrder(Order order) {
         EntityManager manager = Factory.emf.createEntityManager();
         EntityTransaction transaction = manager.getTransaction();
         transaction.begin();
-        order.setPatient(patient);
-        patient.getOrders().add(order);
-        order.setProduct(product);
-        product.getOrders().add(order);
         manager.persist(order);
         transaction.commit();
         manager.close();

@@ -18,7 +18,7 @@ import javax.servlet.annotation.WebListener;
 @WebListener
 public class Factory implements ServletContextListener {
 
-	static final String persistanceUnit = "dmeScriptsDemo";
+	static final String persistanceUnit = "dmeScripts";
 	public static final EntityManagerFactory emf = getFactory();
 
 	private static EntityManagerFactory getFactory() {

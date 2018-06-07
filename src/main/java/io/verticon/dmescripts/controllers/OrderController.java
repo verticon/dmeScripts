@@ -21,7 +21,7 @@ import io.verticon.dmescripts.model.*;
 
 @Named
 @ViewScoped
-public class OrderController2 implements Serializable {
+public class OrderController implements Serializable {
 
 	public class HCPC {
 		public String hcpc;
@@ -124,14 +124,11 @@ public class OrderController2 implements Serializable {
     	return patients;
     }
 
-    public Long getPatientId() {
-    	return patient == null ? 0 : patient.getId();
+    public String getPatientId() {
+    	return patient == null ? null : patient.getId();
     }
 
-    // Note: When the patient is changed, the list of candidate products is also potentially changed based on the insurance.
-    // Thus the currently selected product might no longer be valid; this is not being handled at the moment. However, it
-    // seems that the whole insurance thing is going to be eliminated.
-    public void setPatientId(Long id) {
+    public void setPatientId(String id) {
     	patients.forEach(patient -> {
     		if (patient.getId() == id) {
     	    	this.patient = patient;

@@ -2,10 +2,10 @@ package io.verticon.dmescripts.controllers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -27,34 +27,48 @@ public class PatientController implements Serializable {
 
     // ********************************* Add New Patient ***************************************
 
-    private Patient newPatient;
+    private boolean addingNew;
+    private String firstName;
+    private String lastName;
+    private Patient.Gender gender;
+    private Date birthday;
 
     public String addNew() {
-    	newPatient = new Patient();
+    	firstName = null;
+    	lastName = null;
+    	gender = null;
+    	birthday = null;
+    	addingNew = true;
         return null;
     }
 
     public Patient.Gender[] getGenders() { return Patient.Gender.values(); }
 
-    public Patient getNewPatient() { return newPatient; }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+
+    public Patient.Gender getGender() { return gender; }
+    public void setGender(Patient.Gender gender) { this.gender = gender; }
+
+    public Date getBirthday() { return birthday; }
+    public void setBirthday(Date birthday) { this.birthday = birthday; }
 
     public String save() {
-    	dataService.addPatient(newPatient); 
-        table.add(newPatient);
-        cancel();
-        return null;
+    	Patient patient = new Patient(firstName, lastName, gender, birthday);
+    	dataService.addPatient(patient); 
+        table.add(patient);
+        return cancel();
     }
 
     public String cancel() {
-    	newPatient = null;
+    	addingNew = false;
         return null;
     }
 
-    public List<String> getInsuranceCompanies() {
-        return Factory.insuranceCompanies;
-    }
-
-    public boolean getAddingNew() { return newPatient != null; }
+    public boolean getAddingNew() { return addingNew; }
 
     // ********************************* The Patients Table ***************************************
 

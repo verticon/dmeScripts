@@ -27,29 +27,25 @@
 
 		        	<h:panelGrid columns="3">
 		            	<h:outputText value="First Name"/>
-			            <h:inputText value="#{patientController.newPatient.firstName}" id="firstName" required="true" requiredMessage="First name is required"/>
+			            <h:inputText value="#{patientController.firstName}" id="firstName" required="true" requiredMessage="First name is required"/>
 		  				<h:message for="firstName" errorClass="error"/>
 
 		    	        <h:outputText value="Last Name"/>
-		        	    <h:inputText value="#{patientController.newPatient.lastName}" id="lastName" required="true" requiredMessage="Last name is required"/>
+		        	    <h:inputText value="#{patientController.lastName}" id="lastName" required="true" requiredMessage="Last name is required"/>
 		  				<h:message for="lastName" errorClass="error"/>
 
 		    	        <h:outputText value="Gender"/>
-						<h:selectOneRadio value="#{patientController.newPatient.gender}" id="gender" required="true">
+						<h:selectOneRadio value="#{patientController.gender}" id="gender" required="true">
     						<f:selectItems value="#{patientController.genders}" />
 						</h:selectOneRadio>
 		  				<h:message for="gender" errorClass="error"/>
  
 		    	        <h:outputText value="Birth Date"/>
-						<h:inputText value="#{patientController.newPatient.birthDate}" id="birthDate" required="true" requiredMessage="Birth date is required">
+						<h:inputText value="#{patientController.birthday}" id="birthday" required="true" requiredMessage="Birthday is required">
 							<f:convertDateTime pattern="MM/dd/yyyy" />
 						</h:inputText>
-		  				<h:message for="birthDate" errorClass="error"/>
+		  				<h:message for="birthday" errorClass="error"/>
 		
-			            <h:outputText value="Insurance"/>
-		    	        <h:selectOneMenu validatorMessage="required" value="#{patientController.newPatient.insurance}">
-		        	        <f:selectItems value="#{patientController.insuranceCompanies}" var="insurance" itemValue="#{insurance}" itemLabel="#{insurance}"/>
-		            	</h:selectOneMenu>
 			        </h:panelGrid>
 		
 		    	    <h:panelGroup>
@@ -91,16 +87,7 @@
 		                </f:facet>
 	    	            <h:outputText value="#{patient.gender.toString()}"/>
 	        	    </h:column>
-		
-		            <h:column>
-	    	            <f:facet name="header">
-	        	            <h:column>
-	            	            <h:outputText value="Insurance"/>
-	                	    </h:column>
-		                </f:facet>
-	    	            <h:outputText value="#{patient.insurance}"/>
-	        	    </h:column>
-	
+			
 		            <h:column>
 	    	            <f:facet name="header">
 	        	            <h:column>
@@ -119,7 +106,7 @@
 	    	</h:form></td></tr>
 
 	 		<tr><td><h:form class="buttons">
-				<h:commandButton value="Orders" action="Orders2" styleClass="demo"/>
+				<h:commandButton value="Orders" action="Orders" styleClass="demo"/>
 		    </h:form></td></tr>
    	   </table>
     </h:body>

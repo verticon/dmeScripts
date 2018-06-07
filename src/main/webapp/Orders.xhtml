@@ -21,16 +21,16 @@
     	<h:form id="orderProduct" styleClass="demo">
 
 			<h:outputLabel for="patients" value="Patient:" style="margin-right: 8px"></h:outputLabel>
-			<h:selectOneMenu for="patients" value="#{orderController2.patientId}" style="margin-right: 8px">
-				<f:selectItems value="#{orderController2.patients}" var="patient" itemValue="#{patient.id}" itemLabel="#{patient.fullName}" />
-				<f:ajax listener="#{orderController2.patientSelectionChanged}" />
+			<h:selectOneMenu for="patients" value="#{orderController.patientId}" style="margin-right: 8px">
+				<f:selectItems value="#{orderController.patients}" var="patient" itemValue="#{patient.id}" itemLabel="#{patient.fullName}" />
+				<f:ajax listener="#{orderController.patientSelectionChanged}" />
 			</h:selectOneMenu>
 			<h:commandButton value="Manage" action="Patients" styleClass="demo"/>
 
 			<p:panelGrid id="orderGrid" >
 				<p:row style="background-color: #afc4d6;">
 					<p:column>
-						<p:tree id="catheters" widgetVar="catheterTree" value="#{orderController2.catheters}" var="node" orientation="horizontal" selectionMode="single" >
+						<p:tree id="catheters" widgetVar="catheterTree" value="#{orderController.catheters}" var="node" orientation="horizontal" selectionMode="single" >
 							<p:treeNode type="category">
 								<h:outputText value="#{node}" />
 							</p:treeNode>
@@ -39,23 +39,23 @@
 							</p:treeNode>
 							<p:treeNode styleClass="hidden"/>
 			
-							<p:ajax event="expand" listener="#{orderController2.onNodeExpanded}" oncomplete="postProcessExpand(this, PF('catheterTree'))"/>
-							<p:ajax event="collapse" listener="#{orderController2.onNodeCollapsed}"/>
-							<p:ajax event="select" listener="#{orderController2.onNodeSelected}" update="orderProduct:orderButton orderProduct:details" oncomplete="postProcessSelect(this, PF('catheterTree'))"/>
+							<p:ajax event="expand" listener="#{orderController.onNodeExpanded}" oncomplete="postProcessExpand(this, PF('catheterTree'))"/>
+							<p:ajax event="collapse" listener="#{orderController.onNodeCollapsed}"/>
+							<p:ajax event="select" listener="#{orderController.onNodeSelected}" update="orderProduct:orderButton orderProduct:details" oncomplete="postProcessSelect(this, PF('catheterTree'))"/>
 						</p:tree>
 						
 					</p:column>
 					<p:column>
 						<h:panelGroup id="details">
-						    <h:panelGrid columns="1" rendered="#{orderController2.displayPanel(1)}" style="background-color: #9fd1ff;">
+						    <h:panelGrid columns="1" rendered="#{orderController.displayPanel(1)}" style="background-color: #9fd1ff;">
 								<ui:include src="/WEB-INF/ProcessFlow1.xhtml" />
 						    </h:panelGrid>
 
-						    <h:panelGrid columns="1" rendered="#{orderController2.displayPanel(2)}" style="background-color: #9fd1ff;">
+						    <h:panelGrid columns="1" rendered="#{orderController.displayPanel(2)}" style="background-color: #9fd1ff;">
 								<ui:include src="/WEB-INF/ProcessFlow2.xhtml" />
 						    </h:panelGrid>
 
-						    <h:panelGrid columns="1" rendered="#{orderController2.displayPanel(3)}" style="background-color: #9fd1ff;">
+						    <h:panelGrid columns="1" rendered="#{orderController.displayPanel(3)}" style="background-color: #9fd1ff;">
 								<ui:include src="/WEB-INF/ProcessFlow3.xhtml" />
 						    </h:panelGrid>
 						</h:panelGroup>
@@ -66,16 +66,16 @@
 				<p:row style="background-color: #afc4d6">
 					<p:column colspan="2" style="text-align: center">
 						<h:panelGroup id="orderButton">
-	        	    		<p:commandButton value="Place Order" actionListener="#{orderController2.placeOrder(true)}" rendered="#{orderController2.selectedProduct != null}" update="confirmQuantity orderReceipt" />
+	        	    		<p:commandButton value="Place Order" actionListener="#{orderController.placeOrder(true)}" rendered="#{orderController.selectedProduct != null}" update="confirmQuantity orderReceipt" />
 
 						    <p:dialog id="confirmQuantity" widgetVar="confirmQuantityDialog" header="Confirm Quantity" showEffect="fold" hideEffect="fold">
-								<h:outputText value="#{orderController2.quantityWarning}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
-		        	    		<p:commandButton value="Yes" actionListener="#{orderController2.placeOrder(false)}" update="orderReceipt" oncomplete="PF('confirmQuantityDialog').hide()"/>
+								<h:outputText value="#{orderController.quantityWarning}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
+		        	    		<p:commandButton value="Yes" actionListener="#{orderController.placeOrder(false)}" update="orderReceipt" oncomplete="PF('confirmQuantityDialog').hide()"/>
 		        	    		<p:commandButton value="No" oncomplete="PF('confirmQuantityDialog').hide()"/>
 						    </p:dialog>
 
 						    <p:dialog id="orderReceipt" widgetVar="orderReceiptDialog" header="Order Receipt" showEffect="fold" hideEffect="fold">
-						    	<h:outputText value="#{orderController2.orderReceipt}"  />
+						    	<h:outputText value="#{orderController.orderReceipt}"  />
 						    </p:dialog>
 						</h:panelGroup>
 					</p:column>

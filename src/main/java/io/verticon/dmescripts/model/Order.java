@@ -1,51 +1,64 @@
 package io.verticon.dmescripts.model;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name="Orders")
 public class Order {
-	
+
+	@Embeddable
+	public static class Item {
+		public String hcpc;
+		public int quantity;
+		
+		public Item() {}
+		
+		public Item(String hcpc, int quantity) {
+			this.hcpc = hcpc;
+			this.quantity = quantity;
+		}
+	}
+
 	private static Long idCounter = 1L;
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "patientid")
-    private Patient patient;
+    private String patientId;
 
-	@ManyToOne
-	@JoinColumn(name = "productid")
-    private Product product;
+    @ElementCollection
+    @CollectionTable(name="ITEMS", joinColumns=@JoinColumn(name="ORDER_ID"))
+    private List<Item> items;
 
 	public Order() {}
 
-	public Order(Patient patient, Product product) {
+	public Order(String patientId, List<Item> items) {
 		id = idCounter++;
-		this.patient = patient;
-		this.product = product;
+		this.patientId = patientId;
+		this.items = items;
 	}
 
     public Long getId() {
     	return id;
     }
     
-    public Patient getPatient() {
-        return patient;
+    public String getPatientId() {
+        return patientId;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
-    public Product getProduct() {
-        return product;
+    public List<Item> getItems() {
+        return items;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProduct(List<Item> items) {
+        this.items = items;
     }
 
     @Override
@@ -62,7 +75,6 @@ public class Order {
 
     @Override
     public String toString() {
-        return String.format("%s - %s, %s", Order.class.getSimpleName(), patient, product);
+        return String.format("%s - %s, %s", Order.class.getSimpleName(), patientId, items);
     }
-
 }
