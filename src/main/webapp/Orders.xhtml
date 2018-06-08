@@ -32,10 +32,10 @@
 					<p:column>
 						<p:tree id="catheters" widgetVar="catheterTree" value="#{orderController.catheters}" var="node" orientation="horizontal" selectionMode="single" >
 							<p:treeNode type="category">
-								<h:outputText value="#{node}" />
+								<h:outputText value="#{node.toString()}" />
 							</p:treeNode>
-							<p:treeNode type="hcpc">
-								<h:outputText value="#{node}" />
+							<p:treeNode type="item">
+								<h:outputText value="#{node.name}" />
 							</p:treeNode>
 							<p:treeNode styleClass="hidden"/>
 			
@@ -46,17 +46,17 @@
 						
 					</p:column>
 					<p:column>
-						<h:panelGroup id="details">
-						    <h:panelGrid columns="1" rendered="#{orderController.displayPanel(1)}" style="background-color: #9fd1ff;">
-								<ui:include src="/WEB-INF/ProcessFlow1.xhtml" />
+						<h:panelGroup id="details" >
+						    <h:panelGrid columns="1" rendered="#{orderController.isSelectedCategory('IndwellingCatheter') and orderController.selectedItem != null}" style="background-color: #9fd1ff;">
+								<ui:include src="/WEB-INF/IndwellingCatheter.xhtml" />
 						    </h:panelGrid>
 
-						    <h:panelGrid columns="1" rendered="#{orderController.displayPanel(2)}" style="background-color: #9fd1ff;">
-								<ui:include src="/WEB-INF/ProcessFlow2.xhtml" />
+						    <h:panelGrid columns="1" rendered="#{orderController.isSelectedCategory('CondomCatheter') and orderController.selectedItem != null}" style="background-color: #9fd1ff;">
+								<ui:include src="/WEB-INF/CondomCatheter.xhtml" />
 						    </h:panelGrid>
 
-						    <h:panelGrid columns="1" rendered="#{orderController.displayPanel(3)}" style="background-color: #9fd1ff;">
-								<ui:include src="/WEB-INF/ProcessFlow3.xhtml" />
+						    <h:panelGrid columns="1" rendered="#{orderController.isSelectedCategory('IntermittentCatheter') and orderController.selectedItem != null}" style="background-color: #9fd1ff;">
+								<ui:include src="/WEB-INF/IntermittantCatheter.xhtml" />
 						    </h:panelGrid>
 						</h:panelGroup>
 
@@ -66,7 +66,7 @@
 				<p:row style="background-color: #afc4d6">
 					<p:column colspan="2" style="text-align: center">
 						<h:panelGroup id="orderButton">
-	        	    		<p:commandButton value="Place Order" actionListener="#{orderController.placeOrder(true)}" rendered="#{orderController.selectedProduct != null}" update="confirmQuantity orderReceipt" />
+	        	    		<p:commandButton value="Place Order" actionListener="#{orderController.placeOrder(true)}" rendered="#{orderController.selectedItem != null}" update="confirmQuantity orderReceipt" />
 
 						    <p:dialog id="confirmQuantity" widgetVar="confirmQuantityDialog" header="Confirm Quantity" showEffect="fold" hideEffect="fold">
 								<h:outputText value="#{orderController.quantityWarning}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />

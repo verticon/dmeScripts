@@ -44,7 +44,7 @@ public class DefaultDataAccessService implements DataAccessService {
 					org.hl7.fhir.dstu3.model.Patient fhirPatient = (org.hl7.fhir.dstu3.model.Patient) entry.getResource();
 					Patient patient = new Patient(fhirPatient);
 					patients.add(patient);
-					System.out.printf("\nRetrieved patient %s\n%s\n", patient.getFullName(), parser.encodeResourceToString(fhirPatient));
+					//System.out.printf("\nRetrieved patient %s\n%s\n", patient.getFullName(), parser.encodeResourceToString(fhirPatient));
 				}
 			}
 		}
@@ -59,14 +59,14 @@ public class DefaultDataAccessService implements DataAccessService {
 	public void addPatient(Patient patient) {
 		org.hl7.fhir.dstu3.model.Patient fhirPatient = patient.getFhirPatient();
 		MethodOutcome outcome = client.create().resource(fhirPatient).execute();
-		System.out.printf("\nAdded %s (patient id = %s)\n%s\n", patient.getFullName(), outcome.getId().getIdPart(), parser.encodeResourceToString(fhirPatient));
+		//System.out.printf("\nAdded %s (patient id = %s)\n%s\n", patient.getFullName(), outcome.getId().getIdPart(), parser.encodeResourceToString(fhirPatient));
 	}
 
 	@Override
 	public void removePatient(Patient patient) {
 		org.hl7.fhir.dstu3.model.Patient fhirPatient = patient.getFhirPatient();
 		OperationOutcome outcome = (OperationOutcome) client.delete().resourceById(new IdDt("Patient", patient.getId())).execute();
-		System.out.printf("\nRemoved %s (patient id = %s)\n%s\n", patient.getFullName(), outcome.getId(), parser.encodeResourceToString(fhirPatient));
+		//System.out.printf("\nRemoved %s (patient id = %s)\n%s\n", patient.getFullName(), outcome.getId(), parser.encodeResourceToString(fhirPatient));
 	}
 
 	// ************************** Orders ********************************

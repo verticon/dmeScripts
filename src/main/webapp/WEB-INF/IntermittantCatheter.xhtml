@@ -9,16 +9,16 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<h:panelGroup>
-		<h:outputLabel for="quantity3" value="Quantity (per month):" style="margin-right: 8px"/>
-		<p:spinner id="quantity3" value="#{orderController.quantity}" size="2" min="1" max="10"/>
+		<h:outputLabel for="intermittentQuantity" value="Quantity (per month):" style="margin-right: 8px"/>
+		<p:spinner id="intermittentQuantity" value="#{intermittentCatheterController.quantity}" size="2" min="1" max="10"/>
 	</h:panelGroup>
 
 	<h:outputText value="&#160;" />
 
 	<h:panelGroup>
-		<h:outputLabel for="french3" value="French:" style="margin-right: 8px"/>
-		<p:selectOneMenu id="french3" value="#{orderController.french}">
- 			<f:selectItems value="#{orderController.frenchChoicesIntermittant}"/>
+		<h:outputLabel for="intermittentFrench" value="French:" style="margin-right: 8px"/>
+		<p:selectOneMenu id="intermittentFrench" value="#{intermittentCatheterController.french}">
+ 			<f:selectItems value="#{intermittentCatheterController.frenchChoices}"/>
 		</p:selectOneMenu>
 	</h:panelGroup>
 
@@ -26,8 +26,8 @@
 
 	<h:panelGroup>
    		<h:outputLabel for="length" value="Length:" style="margin-right: 8px"/>
-		<p:selectOneRadio id="length" value="#{orderController.length}" style="display: inline-table;">
- 			<f:selectItems value="#{orderController.lengthChoices}"/>
+		<p:selectOneRadio id="length" value="#{intermittentCatheterController.length}" style="display: inline-table;">
+ 			<f:selectItems value="#{intermittentCatheterController.lengthChoices}"/>
 		</p:selectOneRadio>
 	</h:panelGroup>
 
@@ -35,7 +35,7 @@
 
 	<h:panelGroup>
 		<h:outputLabel for="closedSysteme" value="Add Closed System Option (Sterile Technique)?" style="margin-right: 8px"/>
-        <p:selectBooleanButton id="closedSysteme" value="#{orderController.closedSystemOption}" onLabel="Yes" offLabel="No">
+        <p:selectBooleanButton id="closedSysteme" value="#{intermittentCatheterController.closedSystemOption}" onLabel="Yes" offLabel="No">
         	<p:ajax update="orderProduct:details"/>
         </p:selectBooleanButton>
 	</h:panelGroup>
@@ -43,7 +43,7 @@
 	<h:outputText value="&#160;" />
 
 	<p:panel header="Medical Necessities" style="border: 2px solid #ffffff; background-color: #afc4d6">
-		<h:outputText value="#{orderController.medicalNecessities}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
+		<h:outputText value="#{intermittentCatheterController.medicalNecessities}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
 	</p:panel>
 
 </ui:composition>
