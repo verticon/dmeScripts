@@ -7,9 +7,14 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+
+import io.verticon.dmescripts.model.Patient;
 
 @Named
 @ViewScoped
@@ -23,9 +28,19 @@ public class CondomCatheterController implements ICatheterController, Serializab
     	for (Product product : products) { new DefaultTreeNode("item", product, condom); }
 	}
 
-	@PostConstruct
-    public void init() {
-    }
+	public void getOrder(JsonObjectBuilder builder) {
+		builder
+			.add("hcpc", selectedItem.getHcpc())
+			.add("quantity", quantity)
+			.add("sizeProvided", sizeProvided)
+			.add("diameter", diameter)
+			.add("A4331", tubingQty)
+			.add("A5120", wipesQty)
+			.add("A4358", bagQty)
+			.add("bagType", bagType == 1 ? "leg" : "abdominal")
+			.add("A4357", bedsideBagQty)
+			.add("hasLatexAllergy", hasLatexAllergy);
+	}
 
 	private Product selectedItem;
     public Product getSelectedItem() { return selectedItem; }

@@ -7,9 +7,14 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+
+import io.verticon.dmescripts.model.Patient;
 
 @Named
 @ViewScoped
@@ -23,9 +28,14 @@ public class IntermittentCatheterController implements ICatheterController, Seri
     	for (Product product : products) { new DefaultTreeNode("item", product, indwelling); }
 	}
 
-	@PostConstruct
-    public void init() {
-    }
+	public void getOrder(JsonObjectBuilder builder) {
+		builder
+			.add("hcpc", selectedItem.getHcpc())
+			.add("quantity", quantity)
+			.add("french", french)
+			.add("length", length)
+			.add("closedSystemOption", closedSystemOption);
+	}
 
 	private Product selectedItem;
     public Product getSelectedItem() { return selectedItem; }

@@ -4,12 +4,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+
+import io.verticon.dmescripts.model.Patient;
 
 @Named
 @ViewScoped
@@ -23,9 +27,20 @@ public class IndwellingCatheterController implements ICatheterController, Serial
     	for (Product product : products) { new DefaultTreeNode("item", product, intermittent); }
 	}
 
-	@PostConstruct
-    public void init() {
-    }
+	public void getOrder(JsonObjectBuilder builder) {
+		builder
+			.add("hcpc", selectedItem.getHcpc())
+			.add("quantity", quantity)
+			.add("french", french)
+			.add("balloon", balloon)
+			.add("A4310", trayQty)
+			.add("A4213", syringeQty)
+			.add("A4217", solutionQty)
+			.add("solutionType", solutionType == 1 ? "saline" : "sterile")
+			.add("A4358", bagQty)
+			.add("bagType", bagType == 1 ? "leg" : "abdominal")
+			.add("A4357", bedsideBagQty);
+	}
 
 	private Product selectedItem;
     public Product getSelectedItem() { return selectedItem; }
@@ -108,7 +123,7 @@ public class IndwellingCatheterController implements ICatheterController, Serial
 
  	   	switch (selectedItem.getHcpc()) {
  			case "A4338":
- 				return "<TBD>";
+ 				return "[TBD]";
  			case "A4340":
  				return "Please indicate patient’s need for a specialty product. ex. \"difficulty inserting traditional indwelling catheter due to anatomy, patient requires a coude’ tipped indwelling catheter\"";
  			case "A4344":

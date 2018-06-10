@@ -1,7 +1,7 @@
 package io.verticon.dmescripts.controllers;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.List;
 
@@ -9,6 +9,10 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.NodeCollapseEvent;
@@ -57,7 +61,22 @@ public class OrderController implements Serializable {
     	boolean isValid = catheterController.validateQuantities();
 
     	if(isValid) {
-    		orderReceipt = String.format("Order %d Successfully Placed, %s", ++orderId, new Date());
+    		JsonObjectBuilder builder = Json.createObjectBuilder()
+        			.add("patient", patient.getFullName())
+					.add("category", selectedCategory.toString());
+    		catheterController.getOrder(builder);
+    		JsonObject orderObject = builder.build();
+
+            StringWriter stringWriter = new StringWriter();
+            JsonWriter jsonWriter = Json.createWriter(stringWriter);
+            jsonWriter.writeObject(orderObject);
+            jsonWriter.close();
+            String orderText = stringWriter.getBuffer().toString();
+
+            Order order = new Order(orderText);
+            Factory.sDataService.addOrder(order);
+
+            orderReceipt = String.format("Order %d Successfully Placed, %s", ++orderId, new Date());
     		RequestContext.getCurrentInstance().execute("PF('orderReceiptDialog').show();");
     	}
     	else {

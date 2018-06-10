@@ -1,64 +1,36 @@
 package io.verticon.dmescripts.model;
 
-import java.util.List;
-
 import javax.persistence.*;
 
 @Entity
 @Table(name="Orders")
 public class Order {
 
-	@Embeddable
-	public static class Item {
-		public String hcpc;
-		public int quantity;
-		
-		public Item() {}
-		
-		public Item(String hcpc, int quantity) {
-			this.hcpc = hcpc;
-			this.quantity = quantity;
-		}
-	}
-
-	private static Long idCounter = 1L;
+	private static Long nextId = 1L;
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String patientId;
-
-    @ElementCollection
-    @CollectionTable(name="ITEMS", joinColumns=@JoinColumn(name="ORDER_ID"))
-    private List<Item> items;
+    private String jsonDocument;
 
 	public Order() {}
 
-	public Order(String patientId, List<Item> items) {
-		id = idCounter++;
-		this.patientId = patientId;
-		this.items = items;
+	public Order(String jsonDocument) {
+		id = nextId++;
+		this.jsonDocument = jsonDocument;
 	}
 
     public Long getId() {
     	return id;
     }
     
-    public String getPatientId() {
-        return patientId;
+    public String getDocument() {
+		return jsonDocument;
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public void setProduct(List<Item> items) {
-        this.items = items;
+    public void setDocument(String jsonDocument) {
+		this.jsonDocument = jsonDocument;
     }
 
     @Override
@@ -75,6 +47,6 @@ public class Order {
 
     @Override
     public String toString() {
-        return String.format("%s - %s, %s", Order.class.getSimpleName(), patientId, items);
+        return String.format("%s: %s\n", Order.class.getSimpleName(), getDocument());
     }
 }
