@@ -125,15 +125,14 @@ public class OrderController implements Serializable {
     }
 
     public Patient getPatient() {
-        System.out.printf("Getting patient %s\n", patient.getFullName());
     	return patient;
     }
 
-    public String getPatientId() {
+    public Long getPatientId() {
     	return patient == null ? null : patient.getId();
     }
 
-    public void setPatientId(String id) {
+    public void setPatientId(Long id) {
     	patients.forEach(patient -> {
     		if (patient.getId().equals(id)) {
     	    	this.patient = patient;

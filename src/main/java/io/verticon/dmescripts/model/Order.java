@@ -19,12 +19,12 @@ public class Order {
     
     private String hcpc;
     private int quantity;
-    private String patientId;
+    private Long patientId;
     private String details; // JSON
 
 	public Order() {}
 
-	public Order(Product.Category category, String hcpc, int quantity, String patientId, String details) {
+	public Order(Product.Category category, String hcpc, int quantity, Long patientId, String details) {
 		id = nextId++;
 		this.category = category;
 		this.hcpc = hcpc;
@@ -61,11 +61,11 @@ public class Order {
 		this.quantity = quantity;
     }
 
-    public String getPatientId() {
+    public Long getPatientId() {
 		return patientId;
     }
 
-    public void setPatientId(String patientId) {
+    public void setPatientId(Long patientId) {
 		this.patientId = patientId;
     }
 

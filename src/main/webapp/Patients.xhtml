@@ -40,7 +40,7 @@
 						</h:selectOneRadio>
 		  				<h:message for="gender" errorClass="error"/>
  
-		    	        <h:outputText value="Birth Date"/>
+		    	        <h:outputText value="Birthday (mm/dd/yyyy)"/>
 						<h:inputText value="#{patientController.birthday}" id="birthday" required="true" requiredMessage="Birthday is required">
 							<f:convertDateTime pattern="MM/dd/yyyy" />
 						</h:inputText>

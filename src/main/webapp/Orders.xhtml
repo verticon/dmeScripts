@@ -73,7 +73,7 @@
 				<p:row style="background-color: #afc4d6">
 					<p:column colspan="2" style="text-align: center">
 						<h:panelGroup id="orderButton">
-	        	    		<p:commandButton value="Place Order" actionListener="#{orderController.placeOrder(true)}" rendered="#{orderController.selectedItem != null}" update="confirmQuantity orderReceipt orderProduct:ordersTable" />
+	        	    		<p:commandButton value="Place Order" actionListener="#{orderController.placeOrder(true)}" rendered="#{orderController.selectedItem != null and orderController.patient != null}" update="confirmQuantity orderReceipt orderProduct:ordersTable" />
 
 						    <p:dialog id="confirmQuantity" widgetVar="confirmQuantityDialog" header="Confirm Quantity" showEffect="fold" hideEffect="fold">
 								<h:outputText value="#{orderController.quantityWarning}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
@@ -93,7 +93,7 @@
 
 			<!-- The Orders Table -->
 			<h:panelGroup id="ordersTable">
-	        	<p:dataTable value="#{orderController.orders}" var="order" rendered="#{orderController.selectedCategory != null}" styleClass="demo" columnClasses="columns, columns">
+	        	<p:dataTable value="#{orderController.orders}" var="order" rendered="#{orderController.selectedCategory != null and orderController.patient != null}" styleClass="demo" columnClasses="columns, columns">
 	    	        <f:facet name="header">
 						<h:outputText value="#{orderController.selectedCategory.toString().concat(' Orders for ').concat(orderController.patient.fullName)}"></h:outputText>
 	    	        </f:facet>

@@ -1,10 +1,13 @@
 package io.verticon.dmescripts.model;
 
+import java.util.Calendar;
 import java.util.Date;
 
-import org.hl7.fhir.dstu3.model.DateType;
-import org.hl7.fhir.dstu3.model.Enumerations;
+import javax.persistence.*;
 
+@Entity
+@Table(name="Patients")
+//@EntityListeners(PatientListener.class)
 public class Patient {
 
 	public enum Gender {
@@ -15,45 +18,69 @@ public class Patient {
 		}
 	}
 
-	public static final String system = "http://dmw.levy.com/mrn";
+	private static Long nextId = 1L;
 
-    private org.hl7.fhir.dstu3.model.Patient patient;
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public Patient(org.hl7.fhir.dstu3.model.Patient patient) { this.patient = patient; }
+    private String firstName;
+    private String lastName;
+
+	@Temporal(TemporalType.DATE)
+	private Date birthDate;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    public Patient() {}
 
 	public Patient(String firstName, String lastName, Gender gender, Date birthDate) {
-		patient = new org.hl7.fhir.dstu3.model.Patient();
-
-		patient.addName().setFamily(lastName).addGiven(firstName);
-		patient.addIdentifier().setSystem(system).setValue("12345");
-		patient.setGender(gender == Gender.MALE ? Enumerations.AdministrativeGender.MALE : Enumerations.AdministrativeGender.FEMALE);
-		patient.setBirthDateElement(new DateType(birthDate));
+		id = nextId++;
+		setFirstName(firstName);
+		setLastName(lastName);
+		setGender(gender);
+		setBirthDate(birthDate);
 	}
-
-	public org.hl7.fhir.dstu3.model.Patient getFhirPatient() { return patient; }
 	
-    public String getId() {
-    	return patient.getIdElement().getIdPart();
+    public Long getId() {
+    	return id;
     }
     
     public String getFirstName() {
-        return patient.getName().get(0).getGivenAsSingleString();
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getLastName() {
-        return patient.getName().get(0).getFamily();
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getFullName() {
-        return patient.getName().get(0).getNameAsSingleString();
+        return String.format("%s %s", firstName, lastName);
     }
 
     public Date getBirthDate() {
-        return patient.getBirthDate();
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+    	this.birthDate = adjust(birthDate);
     }
 
     public Gender getGender() {
-        return patient.getGender() == Enumerations.AdministrativeGender.MALE ? Gender.MALE : Gender.FEMALE;
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     @Override
@@ -71,5 +98,23 @@ public class Patient {
     @Override
     public String toString() {
         return String.format("%s: %s", Patient.class.getSimpleName(), getFullName());
+    }
+
+    private Date adjust(Date birthDate) { // Comes in as midnight, i.e. 00:00:00 dd/mm/yyyy
+    	Calendar calendar = Calendar.getInstance();
+    	calendar.setTime(birthDate);
+    	calendar.add(Calendar.HOUR_OF_DAY, 12); // Move it to noon, i.e. 12:00:00 dd/mm/yyyy
+    	Date adjustedDate = calendar.getTime();
+
+    	/*
+    	SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+    	System.out.printf("\nOriginal Birthday (%s) = %s\n", formatter.getTimeZone().getDisplayName(),  formatter.format(birthDate));
+    	System.out.printf("Adjusted Birthday (%s) = %s\n", formatter.getTimeZone().getDisplayName(),  formatter.format(adjustedDate));
+    	formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+    	System.out.printf("Original Birthday (%s) = %s\n", formatter.getTimeZone().getDisplayName(),  formatter.format(birthDate));
+    	System.out.printf("Adjusted Birthday (%s) = %s\n", formatter.getTimeZone().getDisplayName(),  formatter.format(adjustedDate));
+    	*/
+    	
+    	return adjustedDate;
     }
 }

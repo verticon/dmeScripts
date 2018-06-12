@@ -1,11 +1,13 @@
 package io.verticon.dmescripts.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
+
+/*
+import java.util.ArrayList;
 
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.HumanName;
@@ -20,12 +22,14 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.ICriterion;
 import ca.uhn.fhir.rest.gclient.TokenClientParam;
+*/
+
 import io.verticon.dmescripts.Factory;
 
 public class DefaultDataAccessService implements DataAccessService {
 
 	// ************************** Patients ********************************
-
+/*
 	private String fhirServerUrl = "http://fhirtest.uhn.ca/baseDstu3";
 	private FhirContext ctx = FhirContext.forDstu3();
 	private IGenericClient client = ctx.newRestfulGenericClient(fhirServerUrl);
@@ -54,7 +58,7 @@ public class DefaultDataAccessService implements DataAccessService {
 
 		return patients;
 	}
-	
+
 	@Override
 	public void addPatient(Patient patient) {
 		org.hl7.fhir.dstu3.model.Patient fhirPatient = patient.getFhirPatient();
@@ -67,6 +71,36 @@ public class DefaultDataAccessService implements DataAccessService {
 		org.hl7.fhir.dstu3.model.Patient fhirPatient = patient.getFhirPatient();
 		OperationOutcome outcome = (OperationOutcome) client.delete().resourceById(new IdDt("Patient", patient.getId())).execute();
 		//System.out.printf("\nRemoved %s (patient id = %s)\n%s\n", patient.getFullName(), outcome.getId(), parser.encodeResourceToString(fhirPatient));
+	}
+*/
+
+	@Override
+	public List<Patient> getPatients() {
+        EntityManager manager = Factory.emf.createEntityManager();
+        TypedQuery<Patient> query = manager.createQuery("select t from Patient t", Patient.class);
+        List<Patient> patients = query.getResultList();
+        manager.close();
+ 		return patients;
+	}
+
+	@Override
+	public void addPatient(Patient patient) {
+        EntityManager manager = Factory.emf.createEntityManager();
+        EntityTransaction transaction = manager.getTransaction();
+        transaction.begin();
+        manager.persist(patient);
+        transaction.commit();
+        manager.close();
+	}
+
+	@Override
+	public void removePatient(Patient patient) {
+        EntityManager manager = Factory.emf.createEntityManager();
+        EntityTransaction transaction = manager.getTransaction();
+        transaction.begin();
+        manager.remove(manager.getReference(Patient.class, patient.getId()));
+        transaction.commit();
+        manager.close();
 	}
 
 	// ************************** Orders ********************************
