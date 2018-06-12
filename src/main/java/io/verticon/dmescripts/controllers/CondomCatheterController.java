@@ -1,6 +1,7 @@
 package io.verticon.dmescripts.controllers;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,10 +11,12 @@ import javax.inject.Named;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
+import io.verticon.dmescripts.model.Order;
 import io.verticon.dmescripts.model.Patient;
 
 @Named
@@ -24,22 +27,31 @@ public class CondomCatheterController implements ICatheterController, Serializab
 
 	public static void addNodes(TreeNode parent) {
     	TreeNode condom = new DefaultTreeNode("category", Product.Category.CondomCatheter, parent);
-    	Product[] products = { new Product(Product.Category.CondomCatheter, "Latex", "A4349") }; 
+    	Product[] products = {
+    		new Product(Product.Category.CondomCatheter, Hcpcs.description("A4349"), "A4349")
+    	}; 
     	for (Product product : products) { new DefaultTreeNode("item", product, condom); }
 	}
 
-	public void getOrder(JsonObjectBuilder builder) {
-		builder
-			.add("hcpc", selectedItem.getHcpc())
-			.add("quantity", quantity)
-			.add("sizeProvided", sizeProvided)
-			.add("diameter", diameter)
-			.add("A4331", tubingQty)
-			.add("A5120", wipesQty)
-			.add("A4358", bagQty)
-			.add("bagType", bagType == 1 ? "leg" : "abdominal")
-			.add("A4357", bedsideBagQty)
-			.add("hasLatexAllergy", hasLatexAllergy);
+	public Order getOrder(Patient patient) {
+		JsonObjectBuilder builder = Json.createObjectBuilder()
+				.add("sizeProvided", sizeProvided)
+				.add("diameter", diameter)
+				.add("A4331", tubingQty)
+				.add("A5120", wipesQty)
+				.add("A4358", bagQty)
+				.add("bagType", bagType == 1 ? "leg" : "abdominal")
+				.add("A4357", bedsideBagQty)
+				.add("hasLatexAllergy", hasLatexAllergy);
+		JsonObject orderObject = builder.build();
+
+        StringWriter stringWriter = new StringWriter();
+        JsonWriter jsonWriter = Json.createWriter(stringWriter);
+        jsonWriter.writeObject(orderObject);
+        jsonWriter.close();
+        String details = stringWriter.getBuffer().toString();
+
+        return new Order(selectedItem.getCategory(), selectedItem.getHcpc(), quantity, patient.getId(), details);
 	}
 
 	private Product selectedItem;

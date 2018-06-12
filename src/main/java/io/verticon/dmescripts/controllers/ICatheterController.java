@@ -1,7 +1,7 @@
 package io.verticon.dmescripts.controllers;
 
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import io.verticon.dmescripts.model.Order;
+import io.verticon.dmescripts.model.Patient;
 
 public interface ICatheterController {
 
@@ -11,5 +11,5 @@ public interface ICatheterController {
     public boolean validateQuantities();
     public String getQuantityWarning();
 
-    public void getOrder(JsonObjectBuilder builder);
+    public Order getOrder(Patient patient);
 }

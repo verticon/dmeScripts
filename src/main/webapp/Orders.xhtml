@@ -8,27 +8,33 @@
 	xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>DME Scripts Demo</title>
+        <title>DME Scripts POC</title>
     </h:head>
     <h:body> 
     	<h:outputStylesheet library="default" name="css/style.css"  />	<!-- Place in body to insure that my styles load after PrimeFaces' -->
 
     	<h:outputScript library="default" name="js/CustomTree.js" />
 
-		<h3 class="title">DME Scripts Order</h3>
+		<h3 class="title">DME Scripts POC</h3>
 		<h:outputText value="&#160;" />
 			
     	<h:form id="orderProduct" styleClass="demo">
 
-			<h:outputLabel for="patients" value="Patient:" style="margin-right: 8px"></h:outputLabel>
-			<h:selectOneMenu for="patients" value="#{orderController.patientId}" style="margin-right: 8px">
-				<f:selectItems value="#{orderController.patients}" var="patient" itemValue="#{patient.id}" itemLabel="#{patient.fullName}" />
-				<f:ajax listener="#{orderController.patientSelectionChanged}" />
-			</h:selectOneMenu>
-			<h:commandButton value="Manage" action="Patients" styleClass="demo"/>
+			<!-- The Patients Menu -->
+			<h:panelGrid columns="3">
+				<h:outputLabel for="patients" value="Patient:" style="margin-right: 8px"></h:outputLabel>
+				<h:selectOneMenu for="patients" value="#{orderController.patientId}" style="margin-right: 8px">
+					<f:selectItems value="#{orderController.patients}" var="patient" itemValue="#{patient.id}" itemLabel="#{patient.fullName}" />
+					<p:ajax listener="#{orderController.patientSelectionChanged}" update="orderProduct:ordersTable"/>
+				</h:selectOneMenu>
+				<h:commandButton value="Manage" action="Patients" styleClass="demo"/>
+			</h:panelGrid>
+
+			<h:outputText value="&#160;" />
 
 			<p:panelGrid id="orderGrid" >
 				<p:row style="background-color: #afc4d6;">
+					<!-- The Products Tree -->
 					<p:column>
 						<p:tree id="catheters" widgetVar="catheterTree" value="#{orderController.catheters}" var="node" orientation="horizontal" selectionMode="single" >
 							<p:treeNode type="category">
@@ -41,10 +47,11 @@
 			
 							<p:ajax event="expand" listener="#{orderController.onNodeExpanded}" oncomplete="postProcessExpand(this, PF('catheterTree'))"/>
 							<p:ajax event="collapse" listener="#{orderController.onNodeCollapsed}"/>
-							<p:ajax event="select" listener="#{orderController.onNodeSelected}" update="orderProduct:orderButton orderProduct:details" oncomplete="postProcessSelect(this, PF('catheterTree'))"/>
+							<p:ajax event="select" listener="#{orderController.onNodeSelected}" update="orderProduct:orderButton orderProduct:details orderProduct:ordersTable" oncomplete="postProcessSelect(this, PF('catheterTree'))"/>
 						</p:tree>
 						
 					</p:column>
+					<!-- The Item Details -->
 					<p:column>
 						<h:panelGroup id="details" >
 						    <h:panelGrid columns="1" rendered="#{orderController.isSelectedCategory('IndwellingCatheter') and orderController.selectedItem != null}" style="background-color: #9fd1ff;">
@@ -59,14 +66,14 @@
 								<ui:include src="/WEB-INF/IntermittantCatheter.xhtml" />
 						    </h:panelGrid>
 						</h:panelGroup>
-
 					</p:column>
 				</p:row>
 
+				<!-- The Place Order Button -->
 				<p:row style="background-color: #afc4d6">
 					<p:column colspan="2" style="text-align: center">
 						<h:panelGroup id="orderButton">
-	        	    		<p:commandButton value="Place Order" actionListener="#{orderController.placeOrder(true)}" rendered="#{orderController.selectedItem != null}" update="confirmQuantity orderReceipt" />
+	        	    		<p:commandButton value="Place Order" actionListener="#{orderController.placeOrder(true)}" rendered="#{orderController.selectedItem != null}" update="confirmQuantity orderReceipt orderProduct:ordersTable" />
 
 						    <p:dialog id="confirmQuantity" widgetVar="confirmQuantityDialog" header="Confirm Quantity" showEffect="fold" hideEffect="fold">
 								<h:outputText value="#{orderController.quantityWarning}" escape="false" style="white-space: pre-wrap; word-wrap: break-word;" />
@@ -82,29 +89,56 @@
 				</p:row>
 			</p:panelGrid>
 
-        	<h:dataTable value="#{orderController.table}" var="order" styleClass="demo" columnClasses="columns, columns">
-	            <h:column>
-    	            <f:facet name="header">
-        	            <h:column>
-            	            <h:outputText value="Document"></h:outputText>
-                	    </h:column>
-	                </f:facet>
-    	            <h:outputText value="#{order.document}"></h:outputText>
-        	    </h:column>
+			<h:outputText value="&#160;" />
 
-	            <h:column>
-    	            <f:facet name="header">
-        	            <h:column>
-            	            <h:outputText value="Actions"></h:outputText>
-                	    </h:column>
-	                </f:facet>
-    	            <h:panelGrid columns="1">
-        	            <h:commandLink value="delete" action="#{orderController.delete}">
-            	            <f:setPropertyActionListener target="#{orderController.target}" value="#{order}" />
-                	    </h:commandLink>
-	                </h:panelGrid>
-    	        </h:column>
-        	</h:dataTable>
+			<!-- The Orders Table -->
+			<h:panelGroup id="ordersTable">
+	        	<p:dataTable value="#{orderController.orders}" var="order" rendered="#{orderController.selectedCategory != null}" styleClass="demo" columnClasses="columns, columns">
+	    	        <f:facet name="header">
+						<h:outputText value="#{orderController.selectedCategory.toString().concat(' Orders for ').concat(orderController.patient.fullName)}"></h:outputText>
+	    	        </f:facet>
+	
+		            <p:column width="10%">
+	    	            <f:facet name="header">
+	        	            <h:column>
+	            	            <h:outputText value="Item"></h:outputText>
+	                	    </h:column>
+		                </f:facet>
+	    	            <h:outputText value="#{orderController.describeHcpc(order.hcpc)}"></h:outputText>
+	        	    </p:column>
+	
+		            <p:column width="10%">
+	    	            <f:facet name="header">
+	        	            <h:column>
+	            	            <h:outputText value="Quantity"></h:outputText>
+	                	    </h:column>
+		                </f:facet>
+	    	            <h:outputText value="#{order.quantity}"></h:outputText>
+	        	    </p:column>
+	
+		            <p:column width="70%">
+	    	            <f:facet name="header">
+	        	            <h:column>
+	            	            <h:outputText value="Details"></h:outputText>
+	                	    </h:column>
+		                </f:facet>
+	    	            <h:outputText value="#{order.details}"></h:outputText>
+	        	    </p:column>
+	
+		            <p:column width="10%">
+	    	            <f:facet name="header">
+	        	            <h:column>
+	            	            <h:outputText value="Actions"></h:outputText>
+	                	    </h:column>
+		                </f:facet>
+	    	            <h:panelGrid columns="1">
+	        	            <h:commandLink value="delete" action="#{orderController.delete}">
+	            	            <f:setPropertyActionListener target="#{orderController.target}" value="#{order}" />
+	                	    </h:commandLink>
+		                </h:panelGrid>
+	    	        </p:column>
+	        	</p:dataTable>
+			</h:panelGroup>
     	</h:form>
 
 	</h:body>

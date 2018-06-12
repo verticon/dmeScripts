@@ -2,6 +2,7 @@ package io.verticon.dmescripts.controllers;
 
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -61,20 +62,9 @@ public class OrderController implements Serializable {
     	boolean isValid = catheterController.validateQuantities();
 
     	if(isValid) {
-    		JsonObjectBuilder builder = Json.createObjectBuilder()
-        			.add("patient", patient.getFullName())
-					.add("category", selectedCategory.toString());
-    		catheterController.getOrder(builder);
-    		JsonObject orderObject = builder.build();
-
-            StringWriter stringWriter = new StringWriter();
-            JsonWriter jsonWriter = Json.createWriter(stringWriter);
-            jsonWriter.writeObject(orderObject);
-            jsonWriter.close();
-            String orderText = stringWriter.getBuffer().toString();
-
-            Order order = new Order(orderText);
+            Order order = catheterController.getOrder(patient);
             Factory.sDataService.addOrder(order);
+            orders.add(order);
 
             orderReceipt = String.format("Order %d Successfully Placed, %s", ++orderId, new Date());
     		RequestContext.getCurrentInstance().execute("PF('orderReceiptDialog').show();");
@@ -96,19 +86,29 @@ public class OrderController implements Serializable {
     // ********************************* The Orders Table ***************************************
 
     private Order target;
-    private List<Order> table;
+    private List<Order> orders;
 
-    private void initOrders() { table = dataService.getOrders(); }
+    private void initOrders() { orders = dataService.getOrders(); }
 
-    public List<Order> getTable() { return table; }
+    public List<Order> getOrders() {
+    	List<Order> filteredOrders = new ArrayList<Order>();
+    	orders.forEach(order -> {
+    		if (order.getCategory() == selectedCategory && order.getPatientId().equals(patient.getId())) {
+    			filteredOrders.add(order);
+    		}
+    	});
+    	return filteredOrders;
+    }
 
     public void setTarget(Order order) { target = order; }
 
     public String delete() {
     	dataService.removeOrder(target);
-        table.remove(target);
+        orders.remove(target);
         return null;
     }
+
+    public String describeHcpc(String hcpc) { return Hcpcs.description(hcpc); }
 
 	/************************ The Patients Menu **********************************/
 
@@ -124,20 +124,25 @@ public class OrderController implements Serializable {
     	return patients;
     }
 
+    public Patient getPatient() {
+        System.out.printf("Getting patient %s\n", patient.getFullName());
+    	return patient;
+    }
+
     public String getPatientId() {
     	return patient == null ? null : patient.getId();
     }
 
     public void setPatientId(String id) {
     	patients.forEach(patient -> {
-    		if (patient.getId() == id) {
+    		if (patient.getId().equals(id)) {
     	    	this.patient = patient;
     		}
     	});
     }
 
     public void patientSelectionChanged() {
-        //System.out.printf("Selected patient changed to %s\n", patient.getFullName());
+        System.out.printf("Selected patient changed to %s\n", patient.getFullName());
     }
 
 	/************************ The Product Tree **********************************/
@@ -156,7 +161,13 @@ public class OrderController implements Serializable {
     	catheters.setExpanded(true);
     }
 
-    public TreeNode getCatheters() { return catheters; }
+    public TreeNode getCatheters() {
+    	return catheters;
+    }
+
+    public Product.Category getSelectedCategory() {
+    	return selectedCategory;
+    }
 
     public Product getSelectedItem() {
     	return catheterController != null ? catheterController.getSelectedItem() : null;

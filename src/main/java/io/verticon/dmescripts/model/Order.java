@@ -2,6 +2,8 @@ package io.verticon.dmescripts.model;
 
 import javax.persistence.*;
 
+import io.verticon.dmescripts.controllers.Product;
+
 @Entity
 @Table(name="Orders")
 public class Order {
@@ -12,25 +14,67 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String jsonDocument;
+    @Enumerated(EnumType.STRING)
+    private Product.Category category;
+    
+    private String hcpc;
+    private int quantity;
+    private String patientId;
+    private String details; // JSON
 
 	public Order() {}
 
-	public Order(String jsonDocument) {
+	public Order(Product.Category category, String hcpc, int quantity, String patientId, String details) {
 		id = nextId++;
-		this.jsonDocument = jsonDocument;
+		this.category = category;
+		this.hcpc = hcpc;
+		this.quantity = quantity;
+		this.patientId = patientId;
+		this.details = details;
 	}
 
     public Long getId() {
     	return id;
     }
     
-    public String getDocument() {
-		return jsonDocument;
+    public Product.Category getCategory() {
+		return category;
     }
 
-    public void setDocument(String jsonDocument) {
-		this.jsonDocument = jsonDocument;
+    public void setCategory(Product.Category category) {
+		this.category = category;
+    }
+
+    public String getHcpc() {
+		return hcpc;
+    }
+
+    public void setHcpc(String hcpc) {
+		this.hcpc = hcpc;
+    }
+
+    public int getQuantity() {
+		return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+		this.quantity = quantity;
+    }
+
+    public String getPatientId() {
+		return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+		this.patientId = patientId;
+    }
+
+    public String getDetails() {
+		return details;
+    }
+
+    public void setDetails(String details) {
+		this.details = details;
     }
 
     @Override
@@ -42,11 +86,11 @@ public class Order {
         if (!Order.class.isAssignableFrom(that.getClass())) { return false; }
 
         final Order thatOrder = (Order) that;
-        return thatOrder.getId() == this.getId();
+        return thatOrder.getId().equals(this.getId());
     }
 
     @Override
     public String toString() {
-        return String.format("%s: %s\n", Order.class.getSimpleName(), getDocument());
+        return String.format("%s - hcpc: %s, quantity: %d, patient id: %s, details: %s\n", Order.class.getSimpleName(), getHcpc(), getQuantity(), getPatientId(), getDetails());
     }
 }

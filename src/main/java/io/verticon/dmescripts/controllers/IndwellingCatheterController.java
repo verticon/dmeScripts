@@ -1,6 +1,7 @@
 package io.verticon.dmescripts.controllers;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,10 +10,12 @@ import javax.inject.Named;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
+import io.verticon.dmescripts.model.Order;
 import io.verticon.dmescripts.model.Patient;
 
 @Named
@@ -23,23 +26,35 @@ public class IndwellingCatheterController implements ICatheterController, Serial
 
 	public static void addNodes(TreeNode parent) {
     	TreeNode intermittent = new DefaultTreeNode("category", Product.Category.IndwellingCatheter, parent);
-    	Product[] products = { new Product(Product.Category.IndwellingCatheter, "Latex", "A4338"), new Product(Product.Category.IndwellingCatheter, "Specialty", "A4340"), new Product(Product.Category.IndwellingCatheter, "All Silicone", "A4344") }; 
+    	Product[] products = {
+    		new Product(Product.Category.IndwellingCatheter, Hcpcs.description("A4338"), "A4338"),
+    		new Product(Product.Category.IndwellingCatheter, Hcpcs.description("A4340"), "A4340"),
+    		new Product(Product.Category.IndwellingCatheter, Hcpcs.description("A4344"), "A4344")
+    	}; 
+    	
     	for (Product product : products) { new DefaultTreeNode("item", product, intermittent); }
 	}
 
-	public void getOrder(JsonObjectBuilder builder) {
-		builder
-			.add("hcpc", selectedItem.getHcpc())
-			.add("quantity", quantity)
-			.add("french", french)
-			.add("balloon", balloon)
-			.add("A4310", trayQty)
-			.add("A4213", syringeQty)
-			.add("A4217", solutionQty)
-			.add("solutionType", solutionType == 1 ? "saline" : "sterile")
-			.add("A4358", bagQty)
-			.add("bagType", bagType == 1 ? "leg" : "abdominal")
-			.add("A4357", bedsideBagQty);
+	public Order getOrder(Patient patient) {
+		JsonObjectBuilder builder = Json.createObjectBuilder()
+				.add("french", french)
+				.add("balloon", balloon)
+				.add("A4310", trayQty)
+				.add("A4213", syringeQty)
+				.add("A4217", solutionQty)
+				.add("solutionType", solutionType == 1 ? "saline" : "sterile")
+				.add("A4358", bagQty)
+				.add("bagType", bagType == 1 ? "leg" : "abdominal")
+				.add("A4357", bedsideBagQty);
+		JsonObject orderObject = builder.build();
+
+        StringWriter stringWriter = new StringWriter();
+        JsonWriter jsonWriter = Json.createWriter(stringWriter);
+        jsonWriter.writeObject(orderObject);
+        jsonWriter.close();
+        String details = stringWriter.getBuffer().toString();
+
+        return new Order(selectedItem.getCategory(), selectedItem.getHcpc(), quantity, patient.getId(), details);
 	}
 
 	private Product selectedItem;

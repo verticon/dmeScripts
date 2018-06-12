@@ -1,19 +1,21 @@
 package io.verticon.dmescripts.controllers;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
+import io.verticon.dmescripts.model.Order;
 import io.verticon.dmescripts.model.Patient;
 
 @Named
@@ -24,18 +26,29 @@ public class IntermittentCatheterController implements ICatheterController, Seri
 
 	public static void addNodes(TreeNode parent) {
     	TreeNode indwelling = new DefaultTreeNode("category", Product.Category.IntermittentCatheter, parent);
-    	Product[] products = { new Product(Product.Category.IntermittentCatheter, "Straight", "A4351"), new Product(Product.Category.IntermittentCatheter, "Coude' Tip", "A4352") }; 
+    	Product[] products = {
+    		new Product(Product.Category.IntermittentCatheter, Hcpcs.description("A4351"), "A4351"),
+    		new Product(Product.Category.IntermittentCatheter, Hcpcs.description("A4352"), "A4352")
+    	}; 
     	for (Product product : products) { new DefaultTreeNode("item", product, indwelling); }
 	}
 
-	public void getOrder(JsonObjectBuilder builder) {
-		builder
-			.add("hcpc", selectedItem.getHcpc())
-			.add("quantity", quantity)
-			.add("french", french)
-			.add("length", length)
-			.add("closedSystemOption", closedSystemOption);
+	public Order getOrder(Patient patient) {
+		JsonObjectBuilder builder = Json.createObjectBuilder()
+				.add("french", french)
+				.add("length", length)
+				.add("closedSystemOption", closedSystemOption);
+		JsonObject orderObject = builder.build();
+
+        StringWriter stringWriter = new StringWriter();
+        JsonWriter jsonWriter = Json.createWriter(stringWriter);
+        jsonWriter.writeObject(orderObject);
+        jsonWriter.close();
+        String details = stringWriter.getBuffer().toString();
+
+        return new Order(selectedItem.getCategory(), selectedItem.getHcpc(), quantity, patient.getId(), details);
 	}
+
 
 	private Product selectedItem;
     public Product getSelectedItem() { return selectedItem; }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Logger;
 import java.util.Hashtable;
 
 import javax.persistence.EntityManagerFactory;
@@ -38,7 +39,9 @@ public class Factory implements ServletContextListener {
 			overrides.put("javax.persistence.jdbc.url", String.format("jdbc:mysql://%s:%s/%s", hostName, port, dbName));
 			overrides.put("javax.persistence.jdbc.user", userName);
 			overrides.put("javax.persistence.jdbc.password", password);
-			//System.out.printf("Connection URL is %s - user = %s, password = %s", String.format("jdbc:mysql://%s:%s/%s", hostName, port, dbName), userName, password);
+			String msg = String.format("Connection URL is %s - user = %s, password = %s", String.format("jdbc:mysql://%s:%s/%s", hostName, port, dbName), userName, password);
+			System.out.printf("%s\n", msg);
+		    Logger.getLogger("io.verticon").info(msg);
 		}
 
 		return Persistence.createEntityManagerFactory(persistanceUnit, overrides);
